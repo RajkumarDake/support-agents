@@ -5,12 +5,12 @@ import pathlib
 import sys
 from datetime import datetime, timezone
 
-QUEUE_PATH = pathlib.Path(__file__).resolve().parent.parent / "data" / "human_queue.json"
+QUEUE_PATH = pathlib.Path(__file__).resolve().parents[2] / "data" / "human_queue.json"
 
 SLA_HOURS = {"urgent": 1, "high": 4, "medium": 24, "low": 72}
 
 
-def _read_queue() -> list[dict]:
+def read_queue() -> list[dict]:
     if not QUEUE_PATH.exists():
         return []
     text = QUEUE_PATH.read_text().strip()
@@ -33,7 +33,7 @@ def create_handoff(priority: str, summary: str, ticket_id: str = "",
         "status": "waiting_for_human",
         "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
-    queue = _read_queue()
+    queue = read_queue()
     queue.append(entry)
     QUEUE_PATH.parent.mkdir(parents=True, exist_ok=True)
     QUEUE_PATH.write_text(json.dumps(queue, indent=2) + "\n")
@@ -45,7 +45,3 @@ def notify_team(priority: str, ticket_id: str = "") -> dict:
     channel = "pagerduty:support-oncall" if priority in ("urgent", "high") else "slack:#support-queue"
     print(f"[page] {channel} <- ticket {ticket_id or '?'} priority={priority}", file=sys.stderr)
     return {"channel": channel, "priority": priority, "delivered": True}
-
-
-def read_queue() -> list[dict]:
-    return _read_queue()

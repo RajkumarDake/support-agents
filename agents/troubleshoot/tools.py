@@ -4,7 +4,7 @@ import json
 import pathlib
 import re
 
-DATA_DIR = pathlib.Path(__file__).resolve().parent.parent / "data"
+DATA_DIR = pathlib.Path(__file__).resolve().parents[2] / "data"
 
 _CODES: dict = {}
 _INCIDENTS: list = []

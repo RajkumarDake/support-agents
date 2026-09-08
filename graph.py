@@ -1,4 +1,4 @@
-"""The LangGraph state machine that wires the six agents together."""
+"""The LangGraph state machine: router fans out to the specialists, response merges them back."""
 
 import random
 import re
@@ -6,17 +6,17 @@ import time
 
 from langgraph.graph import END, StateGraph
 
-from agents.account import account_agent
-from agents.escalation import escalation_agent
-from agents.evaluator import evaluator, route_after_eval
-from agents.knowledge import knowledge_agent
-from agents.response import response_agent
-from agents.router import router_agent
-from agents.troubleshoot import troubleshoot_agent
+from agents.account.agent import account_agent
+from agents.escalation.agent import escalation_agent
+from agents.evaluator.agent import evaluator, route_after_eval
+from agents.knowledge.agent import knowledge_agent
+from agents.response.agent import response_agent
+from agents.router.agent import router_agent
+from agents.troubleshoot.agent import troubleshoot_agent
 from state import SupportState, new_state
 from trace import save_trace
 
-ACCOUNT_CATEGORIES = {"billing", "account", "refund"}
+SPECIALISTS = ["knowledge", "account", "troubleshoot"]
 
 
 def ingest(state: SupportState) -> dict:
@@ -26,15 +26,9 @@ def ingest(state: SupportState) -> dict:
     return {"ticket": ticket, "ticket_id": state.get("ticket_id") or new_ticket_id()}
 
 
-def route_after_router(state: SupportState) -> str:
-    """First conditional edge: which specialist gets the ticket."""
-    if state["category"] == "technical":
-        return "troubleshoot"
-    if (state["category"] in ACCOUNT_CATEGORIES
-            and state.get("needs_account_data")
-            and state.get("customer_email")):
-        return "account"
-    return "knowledge"
+def fan_out(state: SupportState) -> list[str]:
+    """The fan-out edge: every agent the router dispatched runs, in parallel, in one superstep."""
+    return [d["agent"] for d in state["dispatches"]]
 
 
 def respond(state: SupportState) -> dict:
@@ -51,9 +45,9 @@ def build_graph():
     g = StateGraph(SupportState)
     g.add_node("ingest", ingest)
     g.add_node("router", router_agent)
+    g.add_node("knowledge", knowledge_agent)
     g.add_node("account", account_agent)
     g.add_node("troubleshoot", troubleshoot_agent)
-    g.add_node("knowledge", knowledge_agent)
     g.add_node("response", response_agent)
     g.add_node("evaluator", evaluator)
     g.add_node("escalation", escalation_agent)
@@ -61,13 +55,9 @@ def build_graph():
 
     g.set_entry_point("ingest")
     g.add_edge("ingest", "router")
-    g.add_conditional_edges("router", route_after_router,
-                            {"account": "account", "troubleshoot": "troubleshoot",
-                             "knowledge": "knowledge"})
-    # both specialists chain into retrieval, so the writer always has docs to cite
-    g.add_edge("account", "knowledge")
-    g.add_edge("troubleshoot", "knowledge")
-    g.add_edge("knowledge", "response")
+    g.add_conditional_edges("router", fan_out, SPECIALISTS)
+    for name in SPECIALISTS:
+        g.add_edge(name, "response")
     g.add_edge("response", "evaluator")
     g.add_conditional_edges("evaluator", route_after_eval,
                             {"escalate": "escalation", "respond": "respond"})

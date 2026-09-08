@@ -4,7 +4,7 @@ import csv
 import pathlib
 from collections import Counter
 
-DATA_DIR = pathlib.Path(__file__).resolve().parent.parent / "data"
+DATA_DIR = pathlib.Path(__file__).resolve().parents[2] / "data"
 
 _CUSTOMERS: list[dict] = []
 _INVOICES: list[dict] = []

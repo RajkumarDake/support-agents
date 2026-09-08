@@ -22,6 +22,15 @@ def span(agent: str, t0: float, input_summary: str, output_summary: str) -> dict
     }
 
 
+def record(tool: str, args: dict[str, Any], result: str) -> dict[str, Any]:
+    """Every tool call an agent makes is recorded in state['tool_calls'] with this shape."""
+    return {"tool": tool, "args": args, "result": result}
+
+
+def tools_used(calls: list[dict[str, Any]]) -> str:
+    return ", ".join(dict.fromkeys(c["tool"] for c in calls))
+
+
 def print_trace(result: dict[str, Any]) -> None:
     ticket = result.get("ticket", "")
     headline = ticket if len(ticket) <= 70 else ticket[:67] + "..."

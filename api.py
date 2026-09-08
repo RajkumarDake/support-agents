@@ -7,9 +7,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from agents.escalation.tools import read_queue
+from agents.knowledge.tools import corpus_size
 from graph import run_ticket
-from tools.docs import corpus_size
-from tools.handoff import read_queue
 from trace import TRACE_DIR
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -42,6 +42,7 @@ def create_ticket(payload: TicketIn) -> dict:
         "ticket_id": result["ticket_id"],
         "category": result["category"],
         "route_reason": result["route_reason"],
+        "dispatches": result["dispatches"],
         "answer": result["answer"],
         "confidence": result["confidence"],
         "escalated": result["escalated"],

@@ -5,7 +5,7 @@ import re
 
 from rank_bm25 import BM25Okapi
 
-CORPUS_DIR = pathlib.Path(__file__).resolve().parent.parent / "corpus"
+CORPUS_DIR = pathlib.Path(__file__).resolve().parents[2] / "corpus"
 
 _DOCS: list[dict] = []
 _BM25: BM25Okapi | None = None
