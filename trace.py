@@ -27,6 +27,13 @@ def record(tool: str, args: dict[str, Any], result: str) -> dict[str, Any]:
     return {"tool": tool, "args": args, "result": result}
 
 
+def tag(calls: list[dict[str, Any]], agent: str) -> list[dict[str, Any]]:
+    """Stamp the agent name on its tool calls so the trace shows who called what."""
+    for c in calls:
+        c["agent"] = agent
+    return calls
+
+
 def tools_used(calls: list[dict[str, Any]]) -> str:
     return ", ".join(dict.fromkeys(c["tool"] for c in calls))
 
@@ -38,6 +45,7 @@ def print_trace(result: dict[str, Any]) -> None:
     label.append(f'"{headline}"', style="italic cyan")
     tree = Tree(label, guide_style="grey42")
 
+    calls = result.get("tool_calls", [])
     for entry in result.get("trace", []):
         summary = entry["output_summary"]
         if len(summary) > 68:
@@ -45,7 +53,16 @@ def print_trace(result: dict[str, Any]) -> None:
         line = Text(f"{entry['agent']:<20}", style="bold white")
         line.append(f"{entry['latency_ms']:>6}ms  ", style="yellow")
         line.append(summary, style="grey70")
-        tree.add(line)
+        node = tree.add(line)
+
+        # the tools this agent called, under the agent that called them
+        for c in [c for c in calls if c.get("agent") == entry["agent"]]:
+            args = ", ".join(f"{k}={v}" for k, v in c["args"].items())
+            leaf = Text(f"{c['tool']}(", style="cyan")
+            leaf.append(args[:60], style="grey50")
+            leaf.append(") -> ", style="cyan")
+            leaf.append(str(c["result"])[:60], style="grey70")
+            node.add(leaf)
 
     console.print(tree)
 

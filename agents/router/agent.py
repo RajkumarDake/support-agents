@@ -5,7 +5,7 @@ import time
 from agents.router.tools import check_priority_keywords, detect_sentiment
 from llm import LLMError, call_llm_json, warn_fallback
 from state import SupportState
-from trace import record, span
+from trace import record, span, tag
 
 AGENTS = ["knowledge", "account", "troubleshoot"]
 CATEGORIES = ["billing", "technical", "account", "refund", "unclear"]
@@ -89,7 +89,7 @@ def router_agent(state: SupportState) -> dict:
         "sentiment": sentiment["sentiment"],
         "priority": priority["priority"],
         "dispatches": dispatches,
-        "tool_calls": calls,
+        "tool_calls": tag(calls, "Router Agent"),
         "trace": [span("Router Agent", t0, ticket,
                        f"dispatched: {names} | category={category} "
                        f"sentiment={sentiment['sentiment']} priority={priority['priority']}")],

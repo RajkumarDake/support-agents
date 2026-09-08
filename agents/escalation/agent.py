@@ -5,7 +5,7 @@ import time
 from agents.escalation.tools import create_handoff, notify_team
 from llm import LLMError, call_llm, warn_fallback
 from state import SupportState
-from trace import record, span
+from trace import record, span, tag
 
 SYSTEM = """You write the handoff note a support agent reads before picking up a ticket.
 
@@ -52,7 +52,7 @@ def escalation_agent(state: SupportState) -> dict:
     return {
         "escalated": True,
         "handoff": entry,
-        "tool_calls": calls,
+        "tool_calls": tag(calls, "Escalation Agent"),
         "trace": [span("Escalation Agent", t0, reason,
                        f"priority={priority} -> human queue (sla {entry['sla_hours']}h)")],
     }

@@ -45,5 +45,27 @@
     "summary": "WHAT THE CUSTOMER WANTS:\n- Refund of a duplicate charge this month.\n- Fix for uploads failing repeatedly with ERR_5012.\n\nWHAT WE ALREADY KNOW:\n- Account CUS-1001, Dana Whitfield (Northwind Logistics), Pro plan, active, renews 2026-09-14, visa-4242.\n- Duplicate charge confirmed: INV-8804 and INV-8805, both $490.00, paid 2026-09-02.\n- Error ERR_5012 = upload rejected by storage (size limit, disallowed file type, or expired 15-min token).\n- Open incident INC-2291: intermittent rejections in eu-west-1 for uploads over 50 MB (~3% affected); workaround is retry from a fresh page load.\n- Troubleshooting steps for ERR_5012 already sent; if unresolved, need file name, size, type, and attempt timestamp.\n\nWHAT THE HUMAN MUST DECIDE:\n- Whether to refund $490.00 for INV-8805 (amount and goodwill are human judgment).\n- Whether ERR_5012 is caused by INC-2291 or the customer's file (need file details), and whether any account credit applies.",
     "status": "waiting_for_human",
     "created_at": "2026-09-08T12:23:46+00:00"
+  },
+  {
+    "ticket_id": "5750",
+    "priority": "high",
+    "sla_hours": 4,
+    "category": "refund",
+    "customer_email": "dana@northwind.io",
+    "ticket": "I was charged twice this month and my uploads keep failing with ERR_5012",
+    "summary": "WHAT THE CUSTOMER WANTS:\n- Refund for a duplicate charge this month.\n- Fix for repeated upload failures showing ERR_5012.\n\nWHAT WE ALREADY KNOW:\n- Account CUS-1001, Dana Whitfield (Northwind Logistics), Pro plan, active, pays by visa-4242.\n- Confirmed double charge: INV-8804 and INV-8805, both 2026-09-02, $490.00, both paid. Prior invoices (INV-8801 to INV-8803) are single monthly charges.\n- ERR_5012 means the upload was rejected by storage: file over plan limit (Pro = 2 GB), disallowed file type, or expired 15-minute upload token.\n- Open incident INC-2291: eu-west-1 storage node intermittently rejects uploads over 50 MB (~3% affected); retry from a fresh page load usually succeeds.\n\nWHAT THE HUMAN MUST DECIDE:\n- Whether to refund one of the duplicate invoices (INV-8804 or INV-8805, $490.00) \u2014 refunds require human approval.\n- Which ERR_5012 cause applies: need the customer's file name, size, type, region, and attempt timestamp to rule out INC-2291 versus a plan-limit or file-type issue.",
+    "status": "waiting_for_human",
+    "created_at": "2026-09-08T12:29:02+00:00"
+  },
+  {
+    "ticket_id": "9584",
+    "priority": "high",
+    "sla_hours": 4,
+    "category": "refund",
+    "customer_email": "dana@northwind.io",
+    "ticket": "I was charged twice this month and my uploads keep failing with ERR_5012",
+    "summary": "WHAT THE CUSTOMER WANTS:\n- Resolution for a double charge on this month's invoice.\n- Fix for repeated upload failures showing ERR_5012.\n\nWHAT WE ALREADY KNOW:\n- Account CUS-1001, Dana Whitfield (Northwind Logistics), Pro plan, active, renews 2026-09-14, visa-4242.\n- Double charge confirmed: INV-8804 and INV-8805, both $490.00, both paid 2026-09-02.\n- ERR_5012 = storage rejected the upload: file over per-file limit (Pro = 2 GB), disallowed file type, or expired 15-minute token.\n- Open incident INC-2291 (eu-west-1): intermittent rejections on files over 50 MB; retry usually succeeds. Customer's region and file details unknown.\n\nWHAT THE HUMAN MUST DECIDE:\n- Whether to refund INV-8805 ($490.00) \u2014 refunds require human approval.\n- Whether INC-2291 plausibly explains the failures, or whether to request file name, size, type, and timestamp before further diagnosis.",
+    "status": "waiting_for_human",
+    "created_at": "2026-09-08T12:33:04+00:00"
   }
 ]

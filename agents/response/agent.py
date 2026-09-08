@@ -5,7 +5,7 @@ import time
 from agents.response.tools import check_tone, get_template
 from llm import LLMError, call_llm, warn_fallback
 from state import SupportState
-from trace import record, span
+from trace import record, span, tag
 
 SYSTEM = """You are the response agent for a customer support team. Write the reply that is
 sent to the customer.
@@ -65,7 +65,7 @@ def response_agent(state: SupportState) -> dict:
     return {
         "draft": draft,
         "tone_flags": flags,
-        "tool_calls": calls,
+        "tool_calls": tag(calls, "Response Agent"),
         "trace": [span("Response Agent", t0, f"sources: {', '.join(sources) or 'none'}",
                        f"merged {len(results)} agent results ({merged}), "
                        f"draft {len(draft)} chars, tone {'clean' if not flags else flags}")],

@@ -6,7 +6,7 @@ import time
 from agents.knowledge.tools import filter_by_category, search_docs
 from llm import LLMError, call_llm, warn_fallback
 from state import SupportState, dispatch, result
-from trace import record, span, tools_used
+from trace import record, span, tag, tools_used
 
 # below this BM25 score the top hit is noise, so the agent rewrites the query and retries
 WEAK_SCORE = 3.0
@@ -58,7 +58,7 @@ def knowledge_agent(state: SupportState) -> dict:
     return {
         "results": [result("Knowledge Agent", query, headline,
                            context or "No help doc matched this question.", ids, strong)],
-        "tool_calls": calls,
+        "tool_calls": tag(calls, "Knowledge Agent"),
         "trace": [span("Knowledge Agent", t0, query,
                        f"tools: {tools_used(calls)} | {headline}")],
     }

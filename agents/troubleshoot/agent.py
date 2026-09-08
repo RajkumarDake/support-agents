@@ -5,7 +5,7 @@ import time
 from agents.troubleshoot.tools import extract_error_code, known_issues, lookup_error
 from llm import LLMError, call_llm, warn_fallback
 from state import SupportState, dispatch, result
-from trace import record, span, tools_used
+from trace import record, span, tag, tools_used
 
 SYSTEM = """You are the troubleshooting agent. Using ONLY the error record and incident notes
 supplied, write the fix steps for the customer, ordered from most to least likely to work.
@@ -61,7 +61,7 @@ def troubleshoot_agent(state: SupportState) -> dict:
         "results": [result("Troubleshoot Agent", query, headline,
                            "DIAGNOSIS\n" + steps + "\n\n" + "\n\n".join(context),
                            sources, bool(error or incidents))],
-        "tool_calls": calls,
+        "tool_calls": tag(calls, "Troubleshoot Agent"),
         "trace": [span("Troubleshoot Agent", t0, query,
                        f"tools: {tools_used(calls)} | {headline}")],
     }

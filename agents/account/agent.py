@@ -6,7 +6,7 @@ from agents.account.tools import (find_duplicate_charges, get_customer, get_invo
                                   usage_summary)
 from llm import LLMError, call_llm_json, warn_fallback
 from state import SupportState, dispatch, result
-from trace import record, span, tools_used
+from trace import record, span, tag, tools_used
 
 OPTIONAL_TOOLS = ["get_invoices", "usage_summary"]
 
@@ -34,7 +34,7 @@ def account_agent(state: SupportState) -> dict:
             "results": [result("Account Agent", query, "no customer record found",
                                f"ACCOUNT RECORD\nNo customer record for {email or 'this email'}.",
                                [], False)],
-            "tool_calls": calls,
+            "tool_calls": tag(calls, "Account Agent"),
             "trace": [span("Account Agent", t0, email or "(no email)",
                            f"tools: {tools_used(calls)} | no customer record found")],
         }
@@ -83,7 +83,7 @@ def account_agent(state: SupportState) -> dict:
 
     return {
         "results": [result("Account Agent", query, headline, "\n".join(lines), sources, True)],
-        "tool_calls": calls,
+        "tool_calls": tag(calls, "Account Agent"),
         "trace": [span("Account Agent", t0, f"{email} | {query[:60]}",
                        f"tools: {tools_used(calls)} | {headline}")],
     }
