@@ -27,12 +27,11 @@ def troubleshoot_agent(state: SupportState) -> dict:
     calls = [record("lookup_error", {"code": code or "(none found)"},
                     error["title"] if error else "no matching error code")]
 
+    # with nothing to search on, the whole incident board is noise, not evidence
     keyword = code if error else _topic(query)
-    # an unfiltered incident list is context, not evidence, so it does not count as a match
-    matched = known_issues(keyword) if keyword else []
-    incidents = matched or known_issues()
-    calls.append(record("known_issues", {"keyword": keyword},
-                        ", ".join(i["id"] for i in incidents) or "no open incidents"))
+    incidents = known_issues(keyword) if keyword else []
+    calls.append(record("known_issues", {"keyword": keyword or "(nothing to match on)"},
+                        ", ".join(i["id"] for i in incidents) or "no matching open incident"))
 
     context = []
     if error:
@@ -61,7 +60,7 @@ def troubleshoot_agent(state: SupportState) -> dict:
     return {
         "results": [result("Troubleshoot Agent", query, headline,
                            "DIAGNOSIS\n" + steps + "\n\n" + "\n\n".join(context),
-                           sources, bool(error or matched))],
+                           sources, bool(error or incidents))],
         "tool_calls": calls,
         "trace": [span("Troubleshoot Agent", t0, query,
                        f"tools: {tools_used(calls)} | {headline}")],

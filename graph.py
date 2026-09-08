@@ -28,7 +28,7 @@ def ingest(state: SupportState) -> dict:
 
 def fan_out(state: SupportState) -> list[str]:
     """The fan-out edge: every agent the router dispatched runs, in parallel, in one superstep."""
-    return [d["agent"] for d in state["dispatches"]]
+    return [d["agent"] for d in state["dispatches"]] or ["knowledge"]
 
 
 def respond(state: SupportState) -> dict:

@@ -18,6 +18,9 @@ Agents:
 - troubleshoot: error codes, failures, crashes, uploads, sync, sign-in problems
 - knowledge: how-to, policy and general product questions answered from the help centre
 
+Only dispatch account when answering needs THIS customer's records. A general how-to or policy
+question is a knowledge job, even when it is about billing or seats.
+
 For each problem write a short sub-query in your own words, plus the details that agent needs
 (account: {"email": "..."}, troubleshoot: {"error_code": "ERR_1234"}). Dispatch every agent the
 mail needs - one, two or three - but at most one dispatch per agent.
