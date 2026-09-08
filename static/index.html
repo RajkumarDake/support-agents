@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support Agents</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #171a21; --line: #262b36; --text: #e6e9ef;
+    --muted: #8b93a7; --accent: #6ea8fe; --good: #4ade80; --warn: #fbbf24; --bad: #f87171;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 40px 24px 80px; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 18px; margin-bottom: 28px; }
+  h1 { margin: 0 0 6px; font-size: 21px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 13.5px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 20px; margin-bottom: 20px;
+  }
+  label { display: block; font-size: 12px; text-transform: uppercase;
+          letter-spacing: .07em; color: var(--muted); margin-bottom: 7px; }
+  textarea, input {
+    width: 100%; background: #10131a; color: var(--text);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px;
+    font: inherit; resize: vertical;
+  }
+  textarea:focus, input:focus { outline: none; border-color: var(--accent); }
+  .row { display: flex; gap: 14px; align-items: flex-end; margin-top: 16px; }
+  .row > div { flex: 1; }
+  button {
+    background: var(--accent); color: #0b0e14; border: 0; border-radius: 7px;
+    padding: 11px 22px; font: 600 15px/1 inherit; cursor: pointer; white-space: nowrap;
+  }
+  button:disabled { opacity: .5; cursor: default; }
+  .examples { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .examples button {
+    background: transparent; border: 1px solid var(--line); color: var(--muted);
+    font: 13px/1 inherit; padding: 7px 11px; border-radius: 999px;
+  }
+  .examples button:hover { border-color: var(--accent); color: var(--text); }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .07em;
+       color: var(--muted); margin: 0 0 14px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .badge { font-size: 12.5px; padding: 4px 10px; border-radius: 999px;
+           border: 1px solid var(--line); color: var(--muted); }
+  .badge b { color: var(--text); font-weight: 600; }
+  .badge.good { border-color: #235c3a; color: var(--good); }
+  .badge.bad { border-color: #6b2b2b; color: var(--bad); }
+  .answer { white-space: pre-wrap; background: #10131a; border: 1px solid var(--line);
+            border-radius: 8px; padding: 16px; font-size: 14.5px; }
+  ol.trace { list-style: none; margin: 0; padding: 0; }
+  ol.trace li { display: grid; grid-template-columns: 20px 175px 74px 1fr;
+                gap: 10px; align-items: baseline; padding: 9px 0;
+                border-bottom: 1px solid var(--line); font-size: 14px; }
+  ol.trace li:last-child { border-bottom: 0; }
+  .dot { color: var(--accent); }
+  .agent { font-weight: 600; }
+  .ms { color: var(--warn); font-variant-numeric: tabular-nums; text-align: right; }
+  .out { color: var(--muted); font-size: 13.5px; word-break: break-word; }
+  .total { margin-top: 12px; color: var(--muted); font-size: 13px; }
+  .err { color: var(--bad); }
+  .hint { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Support Agents</h1>
+    <div class="sub">Six agents on a LangGraph state machine: route &rarr; look up &rarr;
+      retrieve &rarr; write &rarr; evaluate &rarr; escalate.</div>
+  </header>
+
+  <div class="card">
+    <label for="text">Ticket</label>
+    <textarea id="text" rows="4" placeholder="Describe the problem the customer reported..."></textarea>
+    <div class="row">
+      <div>
+        <label for="email">Customer email</label>
+        <input id="email" value="dana@northwind.io" spellcheck="false">
+      </div>
+      <button id="send">Run agents</button>
+    </div>
+    <div class="examples" id="examples"></div>
+    <div class="hint" id="hint">Each run makes several LLM calls in sequence, so expect
+      20&ndash;50 seconds.</div>
+  </div>
+
+  <div id="out"></div>
+</div>
+
+<script>
+const EXAMPLES = [
+  ["I was charged twice this month - two identical $490 charges on the same day. I want a refund for the duplicate.", "dana@northwind.io"],
+  ["How do I add a team member to my workspace?", "priya@lumen.dev"],
+  ["Getting ERR_5012 every time I try to upload a video file.", "sam@arcadia.co"],
+  ["What is my current plan and how much usage have I got left this period?", "leo@bright.works"],
+  ["it's broken", "eli@quarrystone.net"],
+];
+const LABELS = ["double charge", "how-to", "ERR_5012", "plan & usage", "vague"];
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+EXAMPLES.forEach(([text, email], i) => {
+  const b = document.createElement("button");
+  b.textContent = LABELS[i];
+  b.onclick = () => { $("text").value = text; $("email").value = email; };
+  $("examples").appendChild(b);
+});
+$("text").value = EXAMPLES[0][0];
+
+$("send").onclick = run;
+$("text").addEventListener("keydown", (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === "Enter") run();
+});
+
+async function run() {
+  const text = $("text").value.trim();
+  if (!text) return;
+  $("send").disabled = true;
+  $("send").textContent = "Running...";
+  const started = Date.now();
+  const timer = setInterval(() => {
+    $("out").innerHTML = `<div class="card"><h2>Working</h2><div class="sub">Agents running
+      &mdash; ${((Date.now() - started) / 1000).toFixed(1)}s elapsed</div></div>`;
+  }, 100);
+
+  try {
+    const res = await fetch("/ticket", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({text, email: $("email").value.trim()}),
+    });
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+    render(await res.json());
+  } catch (err) {
+    $("out").innerHTML = `<div class="card err">Request failed: ${esc(err.message)}</div>`;
+  } finally {
+    clearInterval(timer);
+    $("send").disabled = false;
+    $("send").textContent = "Run agents";
+  }
+}
+
+function render(r) {
+  const total = r.trace.reduce((a, s) => a + s.latency_ms, 0);
+  const badges = [
+    `<span class="badge">ticket <b>#${esc(r.ticket_id)}</b></span>`,
+    `<span class="badge">category <b>${esc(r.category)}</b></span>`,
+    `<span class="badge ${r.confidence >= 0.6 ? "good" : "bad"}">confidence
+       <b>${r.confidence.toFixed(2)}</b></span>`,
+    r.escalated
+      ? `<span class="badge bad">escalated to a human</span>`
+      : `<span class="badge good">answered by agents</span>`,
+    `<span class="badge">${r.tool_calls.length} tool calls</span>`,
+    `<span class="badge">${(r.latency_ms / 1000).toFixed(1)}s</span>`,
+  ].join("");
+
+  const rows = r.trace.map(s => `
+    <li>
+      <span class="dot">&bull;</span>
+      <span class="agent">${esc(s.agent)}</span>
+      <span class="ms">${s.latency_ms}ms</span>
+      <span class="out">${esc(s.output_summary)}</span>
+    </li>`).join("");
+
+  const tools = r.tool_calls.map(t =>
+    `<span class="badge">${esc(t.tool)}</span>`).join("");
+
+  $("out").innerHTML = `
+    <div class="card">
+      <h2>Result</h2>
+      <div class="badges">${badges}</div>
+      <div class="answer">${esc(r.answer)}</div>
+    </div>
+    <div class="card">
+      <h2>Agent trace</h2>
+      <ol class="trace">${rows}</ol>
+      <div class="total">routed as <b>${esc(r.category)}</b> &mdash; ${esc(r.route_reason)}
+        &nbsp;&middot;&nbsp; total ${total}ms</div>
+    </div>
+    <div class="card">
+      <h2>Tools that fired</h2>
+      <div class="badges">${tools}</div>
+    </div>`;
+}
+</script>
+</body>
+</html>
