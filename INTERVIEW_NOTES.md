@@ -87,28 +87,24 @@ and that is the one failure mode that actually costs you customers.
 ```bash
 cd support-agents
 
-# 1. the five paths, ~90 seconds, tickets run concurrently
-./run.sh demo
-
-# 2. one ticket interactively - point at the trace tree and the handoff panel
-./run.sh ask "I was charged twice this month, I want a refund" --email dana@northwind.io
-
-# 3. the API + UI
+# 1. start the server - the trace tree prints for every ticket
 venv/bin/python server.py
 #    open http://localhost:8000, click the "double charge" chip, Run agents
 
-# 4. in another terminal, the same graph over HTTP
+# 2. in another terminal, the fan-out ticket over HTTP
 curl -s -X POST localhost:8000/ticket -H 'Content-Type: application/json' \
-  -d '{"text":"Getting ERR_5012 on upload","email":"sam@arcadia.co"}' | python3 -m json.tool
-curl -s localhost:8000/queue | python3 -m json.tool
-curl -s localhost:8000/health
+  -d '{"text":"I was charged twice and my uploads fail with ERR_5012","email":"dana@northwind.io"}' \
+  | python3 -m json.tool
 
-# 5. the money shot - kill the LLM and show it still works
-OPENROUTER_API_KEY=broken ./run.sh ask "Getting ERR_5012 on upload" --email sam@arcadia.co
+# 3. the escalation queue
+curl -s localhost:8000/queue | python3 -m json.tool
+
+# 4. the money shot - kill the LLM key in .env, restart, hit it again:
+#    the whole graph still completes in under half a second on fallbacks
 ```
 
-Files to have open: `graph.py` (the edges), `agents/evaluator.py` (the escalation edge),
-`agents/router.py` (tools before the LLM call, fallback after).
+Files to have open: `graph.py` (the fan-out and the conditional edge),
+`agents/evaluator/agent.py` (the gate), `agents/router/agent.py` (tools, LLM, fallback).
 
 ## Things to be careful claiming
 
