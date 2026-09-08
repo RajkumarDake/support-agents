@@ -56,12 +56,15 @@ def _deterministic_score(state: SupportState, draft: str, notes: list[str]) -> f
     facts = state.get("account_facts") or {}
     diagnosis = state.get("diagnosis") or {}
 
-    strong = facts.get("found") or diagnosis.get("error") or (
-        docs and docs[0]["score"] >= STRONG_DOC_SCORE)
+    ticket_words = _content_words(state["ticket"])
+
+    # a doc only counts as a strong source if it scores well AND shares a term with the ticket
+    top_doc_relevant = bool(docs) and docs[0]["score"] >= STRONG_DOC_SCORE and bool(
+        ticket_words & _content_words(docs[0]["id"] + " " + docs[0]["title"]))
+    strong = facts.get("found") or diagnosis.get("error") or top_doc_relevant
     score = 0.35 if strong else (0.15 if docs else 0.0)
     notes.append("strong sources" if strong else ("weak sources" if docs else "no sources"))
 
-    ticket_words = _content_words(state["ticket"])
     draft_words = _content_words(draft)
     coverage = (len(ticket_words & draft_words) / len(ticket_words)) if ticket_words else 0.0
     score += 0.20 * coverage
