@@ -54,7 +54,6 @@ def print_trace(result: dict[str, Any]) -> None:
     style = "bold red" if result.get("escalated") else "bold green"
     summary = Text("   ")
     summary.append(verdict, style=style)
-    summary.append(f"  confidence {result.get('confidence', 0):.2f}", style="white")
     summary.append(f"  total {total}ms", style="yellow")
     console.print(summary)
     console.print()

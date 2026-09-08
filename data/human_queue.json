@@ -34,5 +34,16 @@
     "summary": "WHAT THE CUSTOMER WANTS:\n- Refund of a duplicate charge this month.\n- Fix for repeated upload failures (ERR_5012).\n\nWHAT WE ALREADY KNOW:\n- Account CUS-1001, Dana Whitfield (Northwind Logistics), Pro plan, active, pays by visa-4242.\n- Confirmed double charge: two identical paid $490.00 invoices on 2026-09-02 (INV-8804, INV-8805).\n- ERR_5012 = upload rejected by storage (size limit, file type, or 15-min token expiry).\n- Open incident INC-2291: intermittent eu-west-1 rejections on uploads >50 MB (~3% affected); workaround is retry from a fresh page load.\n\nWHAT THE HUMAN MUST DECIDE:\n- Whether to approve the refund for the duplicate $490.00 invoice (INV-8804 or INV-8805) and which invoice to refund.\n- Whether the upload issue is customer-side (file size/type) or attributable to INC-2291; if the customer's files are within limits and retries fail, decide on next steps or escalation.",
     "status": "waiting_for_human",
     "created_at": "2026-09-08T11:42:19+00:00"
+  },
+  {
+    "ticket_id": "1738",
+    "priority": "high",
+    "sla_hours": 4,
+    "category": "refund",
+    "customer_email": "dana@northwind.io",
+    "ticket": "I was charged twice this month and my uploads keep failing with ERR_5012",
+    "summary": "WHAT THE CUSTOMER WANTS:\n- Refund of a duplicate charge this month.\n- Fix for uploads failing repeatedly with ERR_5012.\n\nWHAT WE ALREADY KNOW:\n- Account CUS-1001, Dana Whitfield (Northwind Logistics), Pro plan, active, renews 2026-09-14, visa-4242.\n- Duplicate charge confirmed: INV-8804 and INV-8805, both $490.00, paid 2026-09-02.\n- Error ERR_5012 = upload rejected by storage (size limit, disallowed file type, or expired 15-min token).\n- Open incident INC-2291: intermittent rejections in eu-west-1 for uploads over 50 MB (~3% affected); workaround is retry from a fresh page load.\n- Troubleshooting steps for ERR_5012 already sent; if unresolved, need file name, size, type, and attempt timestamp.\n\nWHAT THE HUMAN MUST DECIDE:\n- Whether to refund $490.00 for INV-8805 (amount and goodwill are human judgment).\n- Whether ERR_5012 is caused by INC-2291 or the customer's file (need file details), and whether any account credit applies.",
+    "status": "waiting_for_human",
+    "created_at": "2026-09-08T12:23:46+00:00"
   }
 ]

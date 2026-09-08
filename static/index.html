@@ -153,8 +153,6 @@ function render(r) {
   const badges = [
     `<span class="badge">ticket <b>#${esc(r.ticket_id)}</b></span>`,
     `<span class="badge">category <b>${esc(r.category)}</b></span>`,
-    `<span class="badge ${r.confidence >= 0.6 ? "good" : "bad"}">confidence
-       <b>${r.confidence.toFixed(2)}</b></span>`,
     r.escalated
       ? `<span class="badge bad">escalated to a human</span>`
       : `<span class="badge good">answered by agents</span>`,

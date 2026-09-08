@@ -18,8 +18,7 @@ def read_queue() -> list[dict]:
 
 
 def create_handoff(priority: str, summary: str, ticket_id: str = "",
-                   ticket: str = "", email: str = "", category: str = "",
-                   confidence: float = 0.0) -> dict:
+                   ticket: str = "", email: str = "", category: str = "") -> dict:
     """Appends a handoff record to data/human_queue.json and returns it."""
     entry = {
         "ticket_id": ticket_id,
@@ -28,7 +27,6 @@ def create_handoff(priority: str, summary: str, ticket_id: str = "",
         "category": category,
         "customer_email": email,
         "ticket": ticket,
-        "confidence": round(confidence, 2),
         "summary": summary,
         "status": "waiting_for_human",
         "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),

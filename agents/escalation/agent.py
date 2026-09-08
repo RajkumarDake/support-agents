@@ -3,7 +3,6 @@
 import time
 
 from agents.escalation.tools import create_handoff, notify_team
-from agents.evaluator.agent import CONFIDENCE_THRESHOLD
 from llm import LLMError, call_llm, warn_fallback
 from state import SupportState
 from trace import record, span
@@ -41,7 +40,6 @@ def escalation_agent(state: SupportState) -> dict:
         ticket=state["ticket"],
         email=state.get("customer_email", ""),
         category=state.get("category", ""),
-        confidence=state.get("confidence", 0.0),
     )
     page = notify_team(priority, state.get("ticket_id", ""))
 
@@ -65,15 +63,11 @@ def _priority(state: SupportState) -> str:
         return "urgent"
     if state.get("priority") == "high" or state.get("category") == "refund":
         return "high"
-    if state.get("confidence", 0) < CONFIDENCE_THRESHOLD:
-        return "medium"
-    return "low"
+    return "medium"
 
 
 def _reason(state: SupportState) -> str:
     reasons = []
-    if state.get("confidence", 0) < CONFIDENCE_THRESHOLD:
-        reasons.append(f'low confidence {state.get("confidence", 0):.2f}')
     if state.get("category") == "refund":
         reasons.append("refund requests are decided by a human")
     if state.get("sentiment") == "angry":
@@ -86,6 +80,4 @@ def _reason(state: SupportState) -> str:
 def _facts_block(state: SupportState) -> str:
     parts = [f'{r["agent"]} - asked: {r["query"]}\n{r["context"]}'
              for r in state.get("results") or []]
-    parts.append(f'The draft the automation produced ({len(state.get("draft", ""))} chars) '
-                 f'was scored {state.get("confidence", 0):.2f}')
     return "\n\n".join(parts)

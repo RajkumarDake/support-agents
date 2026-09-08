@@ -45,9 +45,9 @@ def create_ticket(payload: TicketIn) -> dict:
     RESULTS[result["ticket_id"]] = result
     print_trace(result)
     log.info(
-        "ticket %s category=%s agents=%s confidence=%.2f escalated=%s %dms",
+        "ticket %s category=%s agents=%s escalated=%s %dms",
         result["ticket_id"], result["category"], ",".join(result["agents_used"]),
-        result["confidence"], result["escalated"], result["latency_ms"],
+        result["escalated"], result["latency_ms"],
     )
     return {
         "ticket_id": result["ticket_id"],
@@ -55,7 +55,6 @@ def create_ticket(payload: TicketIn) -> dict:
         "route_reason": result["route_reason"],
         "dispatches": result["dispatches"],
         "answer": result["answer"],
-        "confidence": result["confidence"],
         "escalated": result["escalated"],
         "agents_used": result["agents_used"],
         "tool_calls": result["tool_calls"],

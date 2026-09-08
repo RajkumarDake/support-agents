@@ -19,8 +19,6 @@ class SupportState(TypedDict, total=False):
     # response + evaluation
     draft: str
     tone_flags: list[str]
-    confidence: float
-    eval_notes: list[str]
 
     # escalation
     escalated: bool
@@ -42,7 +40,6 @@ def new_state(ticket: str, email: str = "", ticket_id: str = "") -> SupportState
         "customer_email": email.strip().lower(),
         "dispatches": [],
         "tone_flags": [],
-        "eval_notes": [],
         "escalated": False,
         "handoff": {},
         "results": [],

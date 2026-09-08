@@ -15,9 +15,9 @@ rows. Both chain into a knowledge agent doing BM25 retrieval over the help corpu
 always has citations. A response agent drafts the reply using only what's in state - it can't
 invent an invoice ID because it never sees anything but the retrieved facts.
 
-Then an evaluator scores the draft, and that score drives a conditional edge: high confidence
-goes out to the customer, low confidence or a refund or an angry customer goes to an escalation
-agent that writes a handoff note and puts it on a human queue with a priority and an SLA.
+Then one check decides the terminal: refunds, angry customers and high-priority keywords go to an
+escalation agent that writes a handoff note and puts the ticket on a human queue with a priority
+and an SLA. Everything else goes straight to the customer.
 
 Every agent writes a span into the trace, so I get a tree showing which path the ticket took,
 what each step cost, and what it cited. And every agent has a deterministic fallback - pull the
@@ -55,7 +55,7 @@ add checkpointing and human-in-the-loop resume later, which is the actual next s
 **4. What happens when an agent fails?**
 Every agent catches `LLMError` only - not bare `except` - prints a `[warn]` line to stderr naming
 the agent and the exception, and drops to a deterministic fallback: keyword routing, verbatim
-error-code steps, a template reply, deterministic-only confidence. Failures are visible in the
+error-code steps, a template reply, deterministic scoring. Failures are visible in the
 trace, never silent. I tested this by running the graph with a bad API key: all five demo paths
 still complete, with grounded answers, in a few hundred milliseconds. What is *not* handled is a
 partial failure inside a tool - if `customers.csv` is missing, that raises and the request fails,
@@ -69,18 +69,18 @@ thin client over the real billing API with its own auth and rate limits, and the
 scale independently because they're the slow ones. LangGraph gets a checkpointer (Postgres or
 Redis) so a run can suspend on escalation and resume when the human answers, instead of finishing
 in one process. The escalation queue becomes a real queue and `notify_team` becomes PagerDuty.
-The one thing I would not split is router and evaluator - they're cheap and they're the control
+The one thing I would not split out is the router - it is cheap and it is the control
 plane.
 
 **6. How would you measure this in production?**
 Three layers. Offline: a labelled set of tickets with expected categories, so routing accuracy is
-a number and prompt changes are regression-tested. Online proxies: escalation rate, evaluator
-confidence distribution, retrieval hit rate, and per-agent p50/p95 latency - all of which come
+a number and prompt changes are regression-tested. Online proxies: escalation rate,
+retrieval hit rate, reopen rate, and per-agent p50/p95 latency - all of which come
 straight out of the trace JSON that's already being written. Ground truth: reply-again rate (did
 the customer come back within 24 hours, the real signal that the answer was wrong), human
 override rate on escalated tickets, and CSAT. The metric I would watch hardest is the gap between
-evaluator confidence and human override - if we're confidently wrong, the threshold is miscalibrated,
-and that is the one failure mode that actually costs you customers.
+the auto-sent replies and the human corrections - if we auto-answer something that should have
+been escalated, that is the one failure mode that actually costs you customers.
 
 ## Screen-share script
 
@@ -104,7 +104,7 @@ curl -s localhost:8000/queue | python3 -m json.tool
 ```
 
 Files to have open: `graph.py` (the fan-out and the conditional edge),
-`agents/evaluator/agent.py` (the gate), `agents/router/agent.py` (tools, LLM, fallback).
+`agents/router/agent.py` (tools, LLM, fallback).
 
 ## Things to be careful claiming
 
