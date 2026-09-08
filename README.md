@@ -67,12 +67,32 @@ Every agent degrades to a deterministic fallback and prints a `[warn]` line to s
 API key removed the whole graph still runs end to end in **under half a second** and still
 produces a grounded, cited answer.
 
+## What the Evaluator does
+
+An LLM writing a confident-sounding reply is not the same as a correct reply. The Evaluator is
+the gate between the draft and the customer.
+
+It scores the merged draft on four things: did the agents actually return sources (records or
+docs), does the reply cover every problem the router split out, is it specific rather than
+generic filler, and is the tone clean. That deterministic score is 60% of the result; an LLM
+judge scoring the draft against the original mail is the other 40%.
+
+The output is one number, `confidence`, and a set of risk flags (refund, legal, cancellation,
+angry sentiment). Those two decide the conditional edge: `confidence >= 0.60` and no risk flags
+means the reply goes out, anything else goes to the Escalation Agent. That is the whole point of
+the graph shape - the decision to hand off is a separate node with its own reasoning, not an
+`if` buried inside the response step.
+
+So a reply can be well written and still escalate: the double-charge ticket scores 0.90 and is
+*still* routed to a human, because refunds carry a risk flag. High quality is not the same as
+safe to auto-send.
+
 ## Run it
 
 ```bash
 ./run.sh setup                                  # venv + deps (python3.11)
 ./run.sh demo                                   # five mails, five fan-outs, trace trees
-./run.sh serve                                  # API + UI on http://localhost:8000
+venv/bin/python server.py                       # API + UI on http://localhost:8000
 ./run.sh ask "Getting ERR_5012 on upload" --email sam@arcadia.co
 ```
 

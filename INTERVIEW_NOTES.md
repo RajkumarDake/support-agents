@@ -94,7 +94,7 @@ cd support-agents
 ./run.sh ask "I was charged twice this month, I want a refund" --email dana@northwind.io
 
 # 3. the API + UI
-./run.sh serve
+venv/bin/python server.py
 #    open http://localhost:8000, click the "double charge" chip, Run agents
 
 # 4. in another terminal, the same graph over HTTP
