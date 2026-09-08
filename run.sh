@@ -18,17 +18,12 @@ case "${1:-}" in
     venv/bin/pip install --upgrade pip
     venv/bin/pip install langgraph langchain-openai langchain-core python-dotenv rich \
       rank-bm25 pydantic fastapi uvicorn httpx
-    echo "setup done. put OPENROUTER_API_KEY in .env, then: ./run.sh demo"
+    echo "setup done. put OPENROUTER_API_KEY in .env, then: venv/bin/python server.py"
     ;;
 
   demo)
     need_venv
     exec "$PY" demo.py
-    ;;
-
-  serve)
-    need_venv
-    exec venv/bin/uvicorn api:app --host 0.0.0.0 --port 8000
     ;;
 
   ask)
@@ -42,8 +37,10 @@ case "${1:-}" in
 usage:
   ./run.sh setup                          create venv and install deps
   ./run.sh demo                           run the five demo tickets with trace trees
-  ./run.sh serve                          start the API + UI on http://localhost:8000
   ./run.sh ask "ticket text" [--email a@b.com]
+
+server:
+  venv/bin/python server.py               API + UI on http://localhost:8000
 USAGE
     exit 1
     ;;

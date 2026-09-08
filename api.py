@@ -1,6 +1,7 @@
 """FastAPI front door. POST /ticket is the seam a helpdesk webhook would post to."""
 
 import json
+import logging
 import pathlib
 
 from fastapi import FastAPI, HTTPException
@@ -10,7 +11,10 @@ from pydantic import BaseModel, Field
 from agents.escalation.tools import read_queue
 from agents.knowledge.tools import corpus_size
 from graph import run_ticket
-from trace import TRACE_DIR
+from trace import TRACE_DIR, print_trace
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger("support")
 
 HERE = pathlib.Path(__file__).resolve().parent
 app = FastAPI(title="Support Agents", version="1.0")
@@ -31,13 +35,22 @@ def index() -> FileResponse:
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "docs_indexed": corpus_size(), "queue_depth": len(read_queue())}
+    out = {"status": "ok", "docs_indexed": corpus_size(), "queue_depth": len(read_queue())}
+    log.info("GET /health -> %s", out)
+    return out
 
 
 @app.post("/ticket")
 def create_ticket(payload: TicketIn) -> dict:
+    log.info("POST /ticket email=%s text=%r", payload.email or "-", payload.text[:80])
     result = run_ticket(payload.text, payload.email)
     RESULTS[result["ticket_id"]] = result
+    print_trace(result)
+    log.info(
+        "ticket %s category=%s agents=%s confidence=%.2f escalated=%s %dms",
+        result["ticket_id"], result["category"], ",".join(result["agents_used"]),
+        result["confidence"], result["escalated"], result["latency_ms"],
+    )
     return {
         "ticket_id": result["ticket_id"],
         "category": result["category"],

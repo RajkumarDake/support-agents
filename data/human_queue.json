@@ -22,5 +22,17 @@
     "summary": "WHAT THE CUSTOMER WANTS\n- Something is \"broken\" \u2014 no product, feature, or error named; they want it fixed.\n\nWHAT WE ALREADY KNOW\n- No records or documents found; no ids to cite.\n- Mail contains only \"it's broken\".\n- Troubleshoot agent's reply is a generic 3-step script (reproduce, retry incognito, send error code/timestamp/screenshot), not tied to any known issue.\n- Automation draft (532 chars) scored 0.27; escalation triggered on that low confidence.\n\nWHAT THE HUMAN MUST DECIDE\n- What is actually broken: ask the customer for specifics (what, where, error code, timestamp, screenshot) or close as too vague to action.\n- Whether the generic script is worth sending at all, given it addresses nothing concrete.",
     "status": "waiting_for_human",
     "created_at": "2026-09-08T11:19:51+00:00"
+  },
+  {
+    "ticket_id": "6102",
+    "priority": "high",
+    "sla_hours": 4,
+    "category": "refund",
+    "customer_email": "dana@northwind.io",
+    "ticket": "I was charged twice this month and my uploads keep failing with ERR_5012",
+    "confidence": 0.9,
+    "summary": "WHAT THE CUSTOMER WANTS:\n- Refund of a duplicate charge this month.\n- Fix for repeated upload failures (ERR_5012).\n\nWHAT WE ALREADY KNOW:\n- Account CUS-1001, Dana Whitfield (Northwind Logistics), Pro plan, active, pays by visa-4242.\n- Confirmed double charge: two identical paid $490.00 invoices on 2026-09-02 (INV-8804, INV-8805).\n- ERR_5012 = upload rejected by storage (size limit, file type, or 15-min token expiry).\n- Open incident INC-2291: intermittent eu-west-1 rejections on uploads >50 MB (~3% affected); workaround is retry from a fresh page load.\n\nWHAT THE HUMAN MUST DECIDE:\n- Whether to approve the refund for the duplicate $490.00 invoice (INV-8804 or INV-8805) and which invoice to refund.\n- Whether the upload issue is customer-side (file size/type) or attributable to INC-2291; if the customer's files are within limits and retries fail, decide on next steps or escalation.",
+    "status": "waiting_for_human",
+    "created_at": "2026-09-08T11:42:19+00:00"
   }
 ]
