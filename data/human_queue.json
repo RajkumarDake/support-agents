@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "ticket_id": "7090",
+    "priority": "medium",
+    "sla_hours": 24,
+    "category": "technical",
+    "customer_email": "eli@quarrystone.net",
+    "ticket": "it's broken",
+    "confidence": 0.56,
+    "summary": "WHAT THE CUSTOMER WANTS: Fix \"it's broken\" \u2014 but the mail never says what is broken, so the actual problem is unconfirmed.\n\nWHAT WE ALREADY KNOW: Open incident INC-2291: intermittent upload failures in eu-west-1 for files over 50 MB (~3% of uploads), workaround is fresh-page retry or smaller files. Open incident INC-2274: stale data on Android 15 due to suspended background refresh, workaround is pull-to-refresh or re-sign-in. Automation draft (939 chars) scored 0.56 confidence, triggering escalation.\n\nWHAT THE HUMAN MUST DECIDE: Which incident (if either) actually matches the customer's issue \u2014 the mail gives no symptoms, device, region, or file details. Decide whether to ask the customer for specifics before replying, or send a generic response covering both known incidents and workarounds.",
+    "status": "waiting_for_human",
+    "created_at": "2026-09-08T11:08:42+00:00"
+  },
+  {
+    "ticket_id": "8481",
+    "priority": "high",
+    "sla_hours": 4,
+    "category": "refund",
+    "customer_email": "dana@northwind.io",
+    "ticket": "I was charged twice this month and I want a refund for the duplicate.",
+    "confidence": 0.75,
+    "summary": "WHAT THE CUSTOMER WANTS:\nRefund for a duplicate charge this month.\n\nWHAT WE ALREADY KNOW:\n- Account CUS-1001, Dana Whitfield (Northwind Logistics), Pro plan, active, pays by visa-4242.\n- Two identical paid invoices dated 2026-09-02, $490.00 each: INV-8804 and INV-8805 \u2014 confirmed double charge.\n- Prior invoices (INV-8801/8802/8803) show single monthly charges.\n\nWHAT THE HUMAN MUST DECIDE:\nWhether to approve the $490.00 refund for INV-8805 (or INV-8804), and if so which invoice to refund and by what method (back to visa-4242 or credit).",
+    "status": "waiting_for_human",
+    "created_at": "2026-09-08T11:08:49+00:00"
+  },
+  {
+    "ticket_id": "6639",
+    "priority": "high",
+    "sla_hours": 4,
+    "category": "refund",
+    "customer_email": "dana@northwind.io",
+    "ticket": "I think I was charged twice on my September invoice, and separately our uploads keep failing with ERR_5012 since Monday.",
+    "confidence": 0.88,
+    "summary": "WHAT THE CUSTOMER WANTS: A refund or correction for a suspected double charge on the September invoice. Resolution of recurring upload failures (ERR_5012) since Monday.\n\nWHAT WE ALREADY KNOW: Duplicate charge confirmed \u2014 two identical paid invoices on 2026-09-02 for $490.00 (INV-8804 and INV-8805), account CUS-1001, Dana Whitfield (Northwind Logistics), Pro plan, visa-4242. Uploads: open incident INC-2291 (eu-west-1, storage node intermittently rejects uploads over 50 MB, ~3% of uploads affected, retry usually succeeds). ERR_5012 documented causes: file over plan limit (Pro = 2 GB), disallowed file type, or expired 15-minute upload token.\n\nWHAT THE HUMAN MUST DECIDE: Whether to refund one of the duplicate September invoices ($490.00, INV-8804 or INV-8805) \u2014 refunds are human-only. Also judge whether INC-2291 fully explains the customer's ERR_5012 failures (file details not yet provided) or whether further troubleshooting/file info is needed before closing the upload issue.",
+    "status": "waiting_for_human",
+    "created_at": "2026-09-08T11:10:36+00:00"
+  }
+]

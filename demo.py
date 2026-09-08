@@ -1,4 +1,4 @@
-"""Five tickets, five different paths through the graph."""
+"""Five mails, five different fan-outs through the graph."""
 
 import json
 from concurrent.futures import ThreadPoolExecutor
@@ -6,22 +6,23 @@ from concurrent.futures import ThreadPoolExecutor
 from rich.console import Console
 from rich.panel import Panel
 
+from agents.escalation.tools import QUEUE_PATH
 from graph import run_ticket
-from tools.handoff import QUEUE_PATH
 from trace import print_trace
 
 console = Console(width=110)
 
 TICKETS = [
-    ("I was charged twice this month - two identical $490 charges on the same day. "
-     "I want a refund for the duplicate.", "dana@northwind.io",
-     "billing -> Account Agent finds the duplicate -> refund wording -> escalation"),
+    ("Two problems in one mail. My last invoice shows two identical $490 charges on the same "
+     "day, and since Monday our uploads keep failing with ERR_5012.", "dana@northwind.io",
+     "multi-problem -> fans out to Account Agent + Troubleshoot Agent -> both answered"),
+
+    ("I was charged twice this month and I want a refund for the duplicate.",
+     "dana@northwind.io",
+     "refund wording -> Account Agent -> escalation, a human decides refunds"),
 
     ("How do I add a team member to my workspace?", "priya@lumen.dev",
      "account how-to -> Knowledge Agent only -> clean answer, high confidence"),
-
-    ("Getting ERR_5012 every time I try to upload a video file.", "sam@arcadia.co",
-     "technical -> Troubleshoot Agent chained into Knowledge Agent"),
 
     ("What is my current plan and how much usage have I got left this period?",
      "leo@bright.works",
@@ -36,7 +37,7 @@ def main() -> None:
     # start from an empty queue so GET /queue shows exactly this run
     QUEUE_PATH.write_text("[]\n")
 
-    console.rule("[bold]Multi-agent support demo - 5 tickets[/bold]")
+    console.rule("[bold]Multi-agent support demo - 5 mails[/bold]")
     console.print("[grey62]Running all five concurrently; trees print in order as they "
                   "finish.[/grey62]\n")
 
@@ -55,10 +56,11 @@ def main() -> None:
     console.rule("[bold]Summary[/bold]")
     for (text, _, _), result in zip(TICKETS, results):
         mark = "[red]ESCALATED[/red]" if result["escalated"] else "[green]ANSWERED [/green]"
+        agents = ", ".join(d["agent"] for d in result["dispatches"])
         console.print(f'{mark}  #{result["ticket_id"]}  {result["category"]:<10} '
                       f'conf {result["confidence"]:.2f}  '
-                      f'{len(result["tool_calls"])} tool calls  '
-                      f'{result["latency_ms"]}ms  "{text[:40]}..."')
+                      f'dispatched: {agents:<28} '
+                      f'{len(result["tool_calls"])} tool calls  {result["latency_ms"]}ms')
 
     queue = json.loads(QUEUE_PATH.read_text())
     waiting = ", ".join("#{} ({})".format(q["ticket_id"], q["priority"]) for q in queue)
