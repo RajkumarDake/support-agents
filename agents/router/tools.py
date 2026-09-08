@@ -8,10 +8,13 @@ FRUSTRATED = ["frustrated", "annoyed", "still not", "again", "third time", "twic
               "no response", "waiting", "broken", "keeps failing", "stuck", "urgent", "asap"]
 POSITIVE = ["thanks", "thank you", "great", "love", "appreciate", "happy", "please"]
 
-# words that raise priority regardless of tone
+# words that raise priority regardless of tone.
+# a demand for money back needs a human; merely reporting a duplicate charge does not -
+# the account agent can confirm that from the invoices on its own.
 PRIORITY_KEYWORDS = {
-    "refund": "refund", "chargeback": "refund", "charged twice": "refund",
-    "double charge": "refund", "duplicate charge": "refund", "money back": "refund",
+    "refund": "refund", "chargeback": "refund", "money back": "refund",
+    "charged twice": "dispute", "double charge": "dispute", "duplicate charge": "dispute",
+    "charged me twice": "dispute", "billed twice": "dispute",
     "cancel": "churn", "cancelling": "churn", "cancellation": "churn",
     "downgrade": "churn", "switch to a competitor": "churn", "leaving": "churn",
     "legal": "legal", "lawyer": "legal", "attorney": "legal", "gdpr": "legal",
@@ -50,7 +53,7 @@ def check_priority_keywords(text: str) -> dict:
 
     if kinds & {"legal", "refund"}:
         priority = "high"
-    elif kinds & {"churn", "impact"}:
+    elif kinds & {"churn", "impact", "dispute"}:
         priority = "medium"
     else:
         priority = "normal"

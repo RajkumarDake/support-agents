@@ -6,7 +6,7 @@ import time
 from agents.knowledge.tools import filter_by_category, search_docs
 from llm import LLMError, call_llm, warn_fallback
 from state import SupportState, dispatch, result
-from trace import record, span, tag, tools_used
+from trace import record, span, step, tag, tools_used
 
 # below this BM25 score the top hit is noise, so the agent rewrites the query and retries
 WEAK_SCORE = 3.0
@@ -30,7 +30,10 @@ def knowledge_agent(state: SupportState) -> dict:
         calls.append(record("filter_by_category", {"cat": doc_category},
                             f"{len(in_category)} docs in scope"))
 
+    step("knowledge", f'asked: "{query}" (searching {doc_category or "all"} docs)')
     hits = search_docs(query, k=3, category=doc_category)
+    step("knowledge", f"tool search_docs -> {', '.join(d['id'] for d in hits) or 'nothing'} "
+                      f"(top score {hits[0]['score'] if hits else 0})")
     calls.append(record("search_docs", {"query": query[:60], "k": 3, "category": doc_category},
                         f"{len(hits)} hits, top={hits[0]['score'] if hits else 0}"))
 
@@ -41,6 +44,7 @@ def knowledge_agent(state: SupportState) -> dict:
         except LLMError as exc:
             warn_fallback("Knowledge Agent", exc)
             rewritten = " ".join(w for w in query.split() if len(w) > 3)[:120]
+        step("knowledge", f'weak match, retrying with "{rewritten[:60]}"')
         retry = search_docs(rewritten, k=3)
         calls.append(record("search_docs", {"query": rewritten, "k": 3},
                             f"retry after weak match, {len(retry)} hits"))

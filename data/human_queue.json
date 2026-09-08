@@ -133,5 +133,27 @@
     "summary": "WHAT THE CUSTOMER WANTS:\n- Refund of a duplicate charge this month.\n- Fix for repeated upload failures showing error ERR_5012.\n\nWHY IT NEEDS A HUMAN:\n- Refunds are decided by a human, not the automation.\n- The mail uses high-priority wording, so triage judgement is required on urgency and response.\n\nWHAT THE HUMAN MUST DECIDE:\n- Whether to approve the refund for the duplicate charge, and at what priority to route the ERR_5012 upload issue.",
     "status": "waiting_for_human",
     "created_at": "2026-09-08T12:55:45+00:00"
+  },
+  {
+    "ticket_id": "3141",
+    "priority": "high",
+    "sla_hours": 4,
+    "category": "refund",
+    "customer_email": "dana@northwind.io",
+    "ticket": "I was charged twice this month",
+    "summary": "WHAT THE CUSTOMER WANTS: Customer reports being charged twice this month and wants the duplicate charge resolved.\n\nWHY IT NEEDS A HUMAN: Refunds are decided by a human, not automation. The mail uses high-priority wording, so it should not be handled by an automated response.\n\nWHAT THE HUMAN MUST DECIDE: Whether to issue a refund for the duplicate charge.",
+    "status": "waiting_for_human",
+    "created_at": "2026-09-08T13:01:28+00:00"
+  },
+  {
+    "ticket_id": "8068",
+    "priority": "high",
+    "sla_hours": 4,
+    "category": "refund",
+    "customer_email": "dana@northwind.io",
+    "ticket": "I want a refund for the duplicate charge, and my uploads fail with ERR_5012",
+    "summary": "WHAT THE CUSTOMER WANTS:\n- Refund for a duplicate charge.\n- Fix for upload failures showing ERR_5012.\n\nWHY IT NEEDS A HUMAN:\n- Refunds require human approval; policy does not allow automated issuance.\n- The mail contains high-priority wording, which routes it to a person.\n- Whether ERR_5012 is a known bug or account-specific issue needs judgement.\n\nWHAT THE HUMAN MUST DECIDE:\n- Approve or deny the duplicate-charge refund, and determine if ERR_5012 needs escalation to technical support.",
+    "status": "waiting_for_human",
+    "created_at": "2026-09-08T13:07:04+00:00"
   }
 ]

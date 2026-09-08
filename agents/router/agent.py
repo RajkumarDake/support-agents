@@ -5,7 +5,7 @@ import time
 from agents.router.tools import check_priority_keywords, detect_sentiment
 from llm import LLMError, call_llm_json, warn_fallback
 from state import AGENTS, CATEGORIES, SupportState
-from trace import record, span, tag
+from trace import record, span, step, tag
 
 SYSTEM = """You are the router in a customer support system. One mail often contains several
 separate problems. Split it and dispatch each problem to the agent that can solve it.
@@ -14,13 +14,16 @@ Agents:
 - account: needs THIS customer's records - invoices, charges, plan, seats, usage
 - troubleshoot: error codes, failures, crashes, uploads, sync, sign-in problems
 - knowledge: how-to, policy and general product questions answered from the help centre
-- escalation: a human must decide - refunds, cancellations, legal threats, an angry customer
+- escalation: a human MUST decide - only for an explicit refund or cancellation request, a legal
+  threat, or a genuinely angry customer. Reporting a duplicate charge is NOT escalation: the
+  account agent confirms it from the invoices.
 
 Only dispatch account when answering needs THIS customer's records. A general how-to or policy
 question is a knowledge job, even when it is about billing or seats.
 
-Dispatch escalation alongside the others whenever money is at stake or the customer is upset -
-the specialists still gather the facts, escalation writes the handoff for the human.
+Do not dispatch escalation for a normal question, a bug, or a charge the customer only wants
+explained. When you do dispatch it, the specialists still run - they gather the facts while
+escalation writes the handoff.
 
 For each problem write a short sub-query in your own words, plus the details that agent needs
 (account: {"email": "..."}, troubleshoot: {"error_code": "ERR_1234"}). Dispatch every agent the
@@ -50,8 +53,14 @@ def router_agent(state: SupportState) -> dict:
     ticket = state["ticket"]
     email = state.get("customer_email", "")
 
+    step("router", f"reading mail from {email or 'unknown sender'}: {ticket[:70]}")
+
     sentiment = detect_sentiment(ticket)
     priority = check_priority_keywords(ticket)
+    step("router", f"tool detect_sentiment -> {sentiment['sentiment']} "
+                   f"(matched {sentiment['matched'] or 'nothing'})")
+    step("router", f"tool check_priority_keywords -> {priority['priority']} "
+                   f"(matched {priority['matched'] or 'nothing'})")
     calls = [
         record("detect_sentiment", {"text": ticket[:80]}, sentiment["sentiment"]),
         record("check_priority_keywords", {"text": ticket[:80]},
@@ -63,6 +72,7 @@ def router_agent(state: SupportState) -> dict:
             f"Priority keywords: {priority['matched'] or 'none'}\n"
             f"Customer email on file: {email or 'none'}")
 
+    step("router", "asking the LLM to split the mail into problems")
     try:
         data = call_llm_json(SYSTEM, user, temperature=0.0)
         category = str(data.get("category", "")).lower().strip()
@@ -77,16 +87,28 @@ def router_agent(state: SupportState) -> dict:
         dispatches = keyword_dispatches(ticket, email)
         category = FALLBACK_CATEGORY[dispatches[0]["agent"]]
         reason = "keyword fallback dispatch"
+        step("router", "LLM unavailable, using the keyword fallback table")
 
     # a refund request is always a refund ticket, whatever the model called it
     if priority["refund_intent"] and category in ("billing", "account"):
+        step("router", f"refund wording found, overriding category {category} -> refund")
         category = "refund"
         reason += " (refund wording present)"
 
     # risk always reaches a human, even if the model missed it
     if _needs_human(category, sentiment, priority) and \
             not any(d["agent"] == "escalation" for d in dispatches):
+        step("router", f"risk check: category={category} sentiment={sentiment['sentiment']} "
+                       f"priority={priority['priority']} -> adding escalation")
         dispatches.append({"agent": "escalation", "query": ticket, "details": {}})
+
+    if not _needs_human(category, sentiment, priority):
+        step("router", "risk check: nothing needs a human, answering automatically")
+
+    step("router", f"category={category} because {reason}")
+    for d in dispatches:
+        step("router", f'-> {d["agent"]}: "{d["query"]}" details={d["details"] or "{}"}')
+    step("router", f"dispatching {len(dispatches)} agents in parallel")
 
     names = ", ".join(d["agent"] for d in dispatches)
     return {
@@ -103,10 +125,14 @@ def router_agent(state: SupportState) -> dict:
 
 
 def _needs_human(category: str, sentiment: dict, priority: dict) -> bool:
-    """Refunds, anger and high-priority wording always get a human handoff."""
-    return (category == "refund"
-            or sentiment["sentiment"] == "angry"
-            or priority["priority"] == "high")
+    """A human is needed for money decisions, legal threats and angry customers - nothing else.
+
+    Reporting a duplicate charge is not one of these: the account agent can confirm it from the
+    invoices and explain it. Only an actual refund or cancellation request is a human decision.
+    """
+    return (priority["refund_intent"]
+            or "legal" in priority["kinds"]
+            or sentiment["sentiment"] == "angry")
 
 
 def collect(state: SupportState) -> dict:
@@ -114,6 +140,10 @@ def collect(state: SupportState) -> dict:
     t0 = time.perf_counter()
     results = state.get("results") or []
     names = ", ".join(r["agent"].split()[0].lower() for r in results)
+    step("router", f"all {len(results)} agents reported back")
+    for r in results:
+        step("router", f"<- {r['agent']}: {r['headline']} (sources: {', '.join(r['sources']) or 'none'})")
+    step("router", "handing every finding to the response agent")
     return {
         "trace": [span("Router Agent (collect)", t0, f"{len(results)} agents reported",
                        f"collected findings from {names or 'no agent'}")],

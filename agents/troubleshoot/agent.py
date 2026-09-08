@@ -5,7 +5,7 @@ import time
 from agents.troubleshoot.tools import extract_error_code, known_issues, lookup_error
 from llm import LLMError, call_llm, warn_fallback
 from state import SupportState, dispatch, result
-from trace import record, span, tag, tools_used
+from trace import record, span, step, tag, tools_used
 
 SYSTEM = """You are the troubleshooting agent. Using ONLY the error record and incident notes
 supplied, write the fix steps for the customer, ordered from most to least likely to work.
@@ -23,13 +23,18 @@ def troubleshoot_agent(state: SupportState) -> dict:
     code = job.get("details", {}).get("error_code") or extract_error_code(query) \
         or extract_error_code(state["ticket"])
 
+    step("troubleshoot", f'asked: "{query}" (error code {code or "not given"})')
     error = lookup_error(code) if code else None
+    step("troubleshoot", f"tool lookup_error({code or '-'}) -> "
+                         f"{error['title'] if error else 'no matching error code'}")
     calls = [record("lookup_error", {"code": code or "(none found)"},
                     error["title"] if error else "no matching error code")]
 
     # with nothing to search on, the whole incident board is noise, not evidence
     keyword = code if error else _topic(query)
     incidents = known_issues(keyword) if keyword else []
+    step("troubleshoot", f"tool known_issues({keyword or '-'}) -> "
+                         f"{', '.join(i['id'] for i in incidents) or 'no open incident'}")
     calls.append(record("known_issues", {"keyword": keyword or "(nothing to match on)"},
                         ", ".join(i["id"] for i in incidents) or "no matching open incident"))
 

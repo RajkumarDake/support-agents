@@ -5,7 +5,7 @@ import time
 from agents.response.tools import check_tone, get_template
 from llm import LLMError, call_llm, warn_fallback
 from state import SupportState
-from trace import record, span, tag
+from trace import record, span, step, tag
 
 SYSTEM = """You are the response agent for a customer support team. Write the reply that is
 sent to the customer.
@@ -28,6 +28,9 @@ def response_agent(state: SupportState) -> dict:
     results = state.get("results") or []
     category = state.get("category", "unclear")
 
+    step("response", f"received {len(results)} findings from the router:")
+    for r in results:
+        step("response", f'   {r["agent"]} answered "{r["query"]}" -> {r["headline"]}')
     template = get_template(category)
     calls = [record("get_template", {"category": category}, f"{len(template)} char template")]
 
@@ -41,6 +44,8 @@ def response_agent(state: SupportState) -> dict:
             f"PROBLEMS TO ANSWER\n{problems}\n\n"
             f"Reply in the shape of this template (adapt the wording):\n{template}")
 
+    step("response", f"writing one reply covering {len(results)} problems, "
+                     f"sources {', '.join(sources) or 'none'}")
     try:
         draft = call_llm(SYSTEM, user, temperature=0.3)
     except LLMError as exc:
@@ -48,6 +53,8 @@ def response_agent(state: SupportState) -> dict:
         draft = _template_reply(state, template, results, sources)
 
     flags = check_tone(draft)
+    step("response", f"tool check_tone -> {', '.join(flags) if flags else 'clean'}, "
+                     f"draft {len(draft)} chars")
     calls.append(record("check_tone", {"draft_chars": len(draft)},
                         ", ".join(flags) if flags else "clean"))
 

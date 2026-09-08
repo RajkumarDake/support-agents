@@ -5,7 +5,7 @@ import time
 from agents.escalation.tools import create_handoff, notify_team
 from llm import LLMError, call_llm, warn_fallback
 from state import SupportState, dispatch, result
-from trace import record, span, tag
+from trace import record, span, step, tag
 
 SYSTEM = """You write the handoff note a support agent reads before picking up a ticket.
 
@@ -22,6 +22,7 @@ def escalation_agent(state: SupportState) -> dict:
     query = dispatch(state, "escalation").get("query") or state["ticket"]
     priority = _priority(state)
     reason = _reason(state)
+    step("escalation", f"needed because {reason} -> priority {priority}")
 
     try:
         summary = call_llm(SYSTEM, f"Mail: {state['ticket']}\nReason: {reason}", temperature=0.0)
@@ -39,7 +40,9 @@ def escalation_agent(state: SupportState) -> dict:
         email=state.get("customer_email", ""),
         category=state.get("category", ""),
     )
+    step("escalation", f"tool create_handoff -> queued, first response within {entry['sla_hours']}h")
     page = notify_team(priority, state.get("ticket_id", ""))
+    step("escalation", f"tool notify_team -> paged {page['channel']}")
 
     calls = [
         record("create_handoff", {"priority": priority}, f'queued, sla {entry["sla_hours"]}h'),

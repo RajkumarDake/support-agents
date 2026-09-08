@@ -65,17 +65,48 @@ completes in under half a second with a grounded, cited answer.
 
 ## When a human takes over
 
-Escalation is not a separate stage after the answer - it is one of the agents the router can
-dispatch. Refunds, angry customers and high-priority wording get an escalation dispatch
-alongside the specialists, so the facts still get gathered while the handoff is written.
+Escalation is not a stage after the answer - it is one of the agents the router can dispatch,
+and it is dispatched only when a human genuinely has to decide:
+
+- an explicit refund or cancellation request (money leaves the company)
+- a legal threat - lawyer, GDPR, compliance, data breach
+- a genuinely angry customer
+
+Reporting a duplicate charge is deliberately *not* on that list. The account agent can confirm
+it from the invoices and explain it, so that ticket gets answered automatically. Only when the
+customer asks for the money back does escalation run.
 
 The Escalation Agent writes the note a human reads first (what the customer wants, why it needs
 a human, what to decide), queues it with a priority and an SLA, and pages the on-call channel.
-Its result goes into `state["results"]` like any other agent, so the Response Agent folds it into
-the same reply: the customer gets the facts *and* is told a specialist is picking it up.
+Its result goes into `state["results"]` like any other agent, so the reply tells the customer
+the facts *and* that a specialist is picking it up.
 
-So a ticket can produce a complete, cited answer and still be handed to a human. The
-double-charge mail does exactly that, because refunds are a money decision.
+## Reading the logs
+
+Every decision prints as it happens, so the terminal explains the run without a debugger:
+
+```
+router        tool check_priority_keywords -> high (matched ['refund'])
+router        asking the LLM to split the mail into problems
+router        risk check: refund request -> adding escalation
+router        -> account: "Confirm duplicate charge on this customer's invoices" details={'email': ...}
+router        -> troubleshoot: "Diagnose repeated upload failures" details={'error_code': 'ERR_5012'}
+router        dispatching 3 agents in parallel
+account       tool get_customer(dana@northwind.io) -> CUS-1001 on Pro
+troubleshoot  tool lookup_error(ERR_5012) -> Upload rejected by storage
+troubleshoot  tool known_issues(ERR_5012) -> INC-2291
+escalation    needed because refunds are decided by a human -> priority high
+router        all 3 agents reported back
+router        <- Account Agent: duplicate INV-8804/INV-8805 (sources: CUS-1001, INV-8804, INV-8805)
+router        <- Troubleshoot Agent: ERR_5012 + INC-2291 (sources: ERR_5012, INC-2291)
+router        handing every finding to the response agent
+response      received 3 findings from the router
+response      writing one reply covering 3 problems
+response      tool check_tone -> clean, draft 1336 chars
+```
+
+After that a trace tree prints the same run with per-agent latency, and the full JSON is saved
+to `traces/<ticket_id>.json`.
 
 ## Run it
 

@@ -1,9 +1,11 @@
 """Escalation Agent tools: write to the human queue and page the on-call team."""
 
 import json
+import logging
 import pathlib
-import sys
 from datetime import datetime, timezone
+
+log = logging.getLogger("support")
 
 QUEUE_PATH = pathlib.Path(__file__).resolve().parents[2] / "data" / "human_queue.json"
 
@@ -41,5 +43,5 @@ def create_handoff(priority: str, summary: str, ticket_id: str = "",
 def notify_team(priority: str, ticket_id: str = "") -> dict:
     """Stand-in for a real pager. In production this is PagerDuty / Slack."""
     channel = "pagerduty:support-oncall" if priority in ("urgent", "high") else "slack:#support-queue"
-    print(f"[page] {channel} <- ticket {ticket_id or '?'} priority={priority}", file=sys.stderr)
+    log.info("paged %s for ticket %s (priority %s)", channel, ticket_id or "?", priority)
     return {"channel": channel, "priority": priority, "delivered": True}

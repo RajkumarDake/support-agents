@@ -1,6 +1,7 @@
 """Observability: one span per agent, a rich tree in the terminal, JSON on disk."""
 
 import json
+import logging
 import pathlib
 import time
 from typing import Any
@@ -11,6 +12,12 @@ from rich.tree import Tree
 
 TRACE_DIR = pathlib.Path(__file__).resolve().parent / "traces"
 console = Console(width=110)
+log = logging.getLogger("support")
+
+
+def step(agent: str, message: str) -> None:
+    """A live line for one decision, so the terminal explains itself as the graph runs."""
+    log.info("%-13s %s", agent, message)
 
 
 def span(agent: str, t0: float, input_summary: str, output_summary: str) -> dict[str, Any]:
