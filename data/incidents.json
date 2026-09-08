@@ -1,0 +1,47 @@
+[
+  {
+    "id": "INC-2291",
+    "title": "Elevated upload failures in eu-west-1",
+    "status": "monitoring",
+    "started": "2026-09-07T14:10:00Z",
+    "affects": ["ERR_5012", "uploads", "attachments"],
+    "summary": "A storage node in eu-west-1 is returning intermittent rejections on uploads over 50 MB. Roughly 3% of uploads in that region are affected. Retrying usually succeeds.",
+    "workaround": "Retry the upload from a fresh page load. Files under 50 MB are unaffected."
+  },
+  {
+    "id": "INC-2288",
+    "title": "Delayed webhook delivery",
+    "status": "resolved",
+    "started": "2026-09-04T08:45:00Z",
+    "affects": ["ERR_6002", "webhooks", "integrations"],
+    "summary": "A backlog in the delivery queue delayed webhooks by up to 40 minutes. No events were lost; all were delivered after the backlog drained.",
+    "workaround": "None needed - resolved 2026-09-04T11:20:00Z."
+  },
+  {
+    "id": "INC-2285",
+    "title": "Duplicate charge batch on 2026-09-02",
+    "status": "resolved",
+    "started": "2026-09-02T00:05:00Z",
+    "affects": ["billing", "duplicate charge", "invoices"],
+    "summary": "A retry in the payment processor captured a small batch of monthly invoices twice on 2026-09-02. Affected customers have two identical paid invoices dated 2026-09-02. Refunds are being issued on request and case by case by the billing team.",
+    "workaround": "Contact support with both invoice IDs; the duplicate is refunded in full."
+  },
+  {
+    "id": "INC-2279",
+    "title": "SSO sign-in failures for Okta tenants",
+    "status": "resolved",
+    "started": "2026-08-29T06:30:00Z",
+    "affects": ["ERR_1104", "sso", "saml", "login"],
+    "summary": "A certificate rotation on our side invalidated cached IdP metadata for some Okta tenants, producing ERR_1104 on sign-in.",
+    "workaround": "Re-upload the metadata XML under Settings > Security > SSO."
+  },
+  {
+    "id": "INC-2274",
+    "title": "Mobile app stale data on Android 15",
+    "status": "investigating",
+    "started": "2026-09-05T19:00:00Z",
+    "affects": ["mobile", "sync"],
+    "summary": "Background refresh is being suspended aggressively by the OS on some Android 15 devices, leaving the app showing data up to a day old.",
+    "workaround": "Pull to refresh, or sign out and back in to force a full resync."
+  }
+]

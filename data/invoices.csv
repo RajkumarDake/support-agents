@@ -1,0 +1,30 @@
+invoice_id,customer_id,date,amount_usd,status,description
+INV-8801,CUS-1001,2026-06-14,490.00,paid,Pro plan - monthly
+INV-8802,CUS-1001,2026-07-14,490.00,paid,Pro plan - monthly
+INV-8803,CUS-1001,2026-08-14,490.00,paid,Pro plan - monthly
+INV-8804,CUS-1001,2026-09-02,490.00,paid,Pro plan - monthly
+INV-8805,CUS-1001,2026-09-02,490.00,paid,Pro plan - monthly
+INV-8810,CUS-1002,2026-07-02,2790.00,paid,Business plan - monthly
+INV-8811,CUS-1002,2026-08-02,2790.00,paid,Business plan - monthly
+INV-8812,CUS-1002,2026-09-02,2790.00,paid,Business plan - monthly
+INV-8813,CUS-1002,2026-08-18,180.00,paid,Plan change adjustment - 2 seats
+INV-8820,CUS-1003,2026-07-20,392.00,paid,Pro plan - monthly
+INV-8821,CUS-1003,2026-08-20,392.00,paid,Pro plan - monthly
+INV-8822,CUS-1003,2026-09-04,392.00,paid,Pro plan - monthly
+INV-8830,CUS-1004,2026-07-08,29.00,paid,Starter plan - monthly
+INV-8831,CUS-1004,2026-08-08,29.00,paid,Starter plan - monthly
+INV-8832,CUS-1004,2026-09-08,29.00,paid,Starter plan - monthly
+INV-8840,CUS-1005,2026-07-19,1620.00,paid,Business plan - monthly
+INV-8841,CUS-1005,2026-08-19,1620.00,failed,Business plan - monthly (card declined)
+INV-8842,CUS-1005,2026-09-01,1620.00,open,Business plan - monthly (retry)
+INV-8850,CUS-1006,2026-08-11,294.00,paid,Pro plan - monthly
+INV-8851,CUS-1006,2026-09-11,294.00,paid,Pro plan - monthly
+INV-8860,CUS-1007,2026-02-27,84000.00,paid,Enterprise - annual
+INV-8870,CUS-1008,2026-06-15,29.00,paid,Starter plan - monthly
+INV-8871,CUS-1008,2026-07-15,29.00,paid,Starter plan - monthly
+INV-8872,CUS-1008,2026-08-15,29.00,refunded,Starter plan - charged after cancellation
+INV-8880,CUS-1009,2026-08-01,539.00,paid,Pro plan - monthly
+INV-8881,CUS-1009,2026-09-01,539.00,paid,Pro plan - monthly
+INV-8890,CUS-1010,2026-07-30,2160.00,paid,Business plan - monthly
+INV-8891,CUS-1010,2026-08-30,2160.00,paid,Business plan - monthly
+INV-8892,CUS-1010,2026-08-30,2160.00,paid,Business plan - monthly

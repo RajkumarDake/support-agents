@@ -1,0 +1,11 @@
+customer_id,email,name,company,plan,status,signup_date,renewal_date,seats_used,seats_included,api_calls_used,api_calls_limit,storage_gb_used,storage_gb_limit,payment_method
+CUS-1001,dana@northwind.io,Dana Whitfield,Northwind Logistics,Pro,active,2024-03-14,2026-09-14,12,25,184320,600000,41.2,250,visa-4242
+CUS-1002,priya@lumen.dev,Priya Raman,Lumen Dev Studio,Business,active,2023-11-02,2026-11-02,31,999,742100,2000000,318.7,1000,mastercard-8891
+CUS-1003,sam@arcadia.co,Sam Okafor,Arcadia Media,Pro,active,2025-01-20,2026-10-20,8,25,96450,600000,238.9,250,visa-1180
+CUS-1004,leo@bright.works,Leo Fernandes,Brightworks Studio,Starter,active,2025-06-08,2026-10-08,3,3,58900,60000,9.1,10,amex-3005
+CUS-1005,mira@holt-partners.com,Mira Holt,Holt Partners,Business,past_due,2024-08-19,2026-09-19,18,999,410220,2000000,522.4,1000,visa-7710
+CUS-1006,eli@quarrystone.net,Eli Nakamura,Quarrystone,Pro,active,2025-04-11,2026-10-11,6,25,22140,600000,17.8,250,sepa-DE44
+CUS-1007,noor@fieldkit.app,Noor Haddad,Fieldkit,Enterprise,active,2023-02-27,2027-02-27,140,9999,3891200,20000000,2140.5,5000,ach-wire
+CUS-1008,tomas@vellum.studio,Tomas Alvarez,Vellum Studio,Starter,cancelled,2025-02-15,2026-08-15,1,3,4100,60000,1.4,10,visa-9034
+CUS-1009,ana@saltmarsh.io,Ana Kowalski,Saltmarsh,Pro,active,2024-12-01,2026-12-01,11,25,301880,600000,96.3,250,mastercard-2277
+CUS-1010,jules@pinecrest.org,Jules Baptiste,Pinecrest Foundation,Business,active,2025-05-30,2026-11-30,24,999,150400,2000000,74.6,1000,visa-6612

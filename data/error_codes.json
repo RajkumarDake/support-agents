@@ -1,0 +1,147 @@
+{
+  "ERR_1104": {
+    "title": "SSO assertion rejected",
+    "family": "authentication",
+    "severity": "high",
+    "cause": "The SAML assertion is missing the email attribute, or the clock skew between your identity provider and our servers is over five minutes.",
+    "steps": [
+      "Confirm the IdP sends an `email` attribute in the assertion.",
+      "Check that both the IdP host and your local machine sync time via NTP.",
+      "Re-download the metadata XML and re-upload it under Settings > Security > SSO.",
+      "Sign in from an incognito window to avoid a cached session."
+    ],
+    "doc": "tech-sso-saml"
+  },
+  "ERR_2031": {
+    "title": "Insufficient permissions",
+    "family": "permissions",
+    "severity": "low",
+    "cause": "The signed-in role cannot perform this action. Invoices and team management are Owner/Admin only.",
+    "steps": [
+      "Check your role under Settings > Team.",
+      "Ask an Owner or Admin to raise your role, or to perform the action for you."
+    ],
+    "doc": "account-roles-permissions"
+  },
+  "ERR_3007": {
+    "title": "Import validation failed",
+    "family": "validation",
+    "severity": "low",
+    "cause": "The CSV has duplicate or empty column headers, or a date that is not ISO 8601. Nothing was written.",
+    "steps": [
+      "Open the reported row number in the source file.",
+      "Make every column header unique and non-empty.",
+      "Reformat dates to YYYY-MM-DD and re-upload."
+    ],
+    "doc": "onboarding-import-data"
+  },
+  "ERR_4029": {
+    "title": "Rate limit exceeded",
+    "family": "rate limiting",
+    "severity": "medium",
+    "cause": "More requests than the plan allows within the 10 second smoothing window.",
+    "steps": [
+      "Honour the `Retry-After` header instead of retrying immediately.",
+      "Add exponential backoff with jitter to the client.",
+      "Batch reads where the API supports it.",
+      "Raise the plan if sustained throughput is genuinely needed."
+    ],
+    "doc": "tech-api-rate-limits"
+  },
+  "ERR_5012": {
+    "title": "Upload rejected by storage",
+    "family": "storage",
+    "severity": "medium",
+    "cause": "The upload was rejected before completing: the file exceeds the plan's per-file limit, the file type is not allowed, or the 15 minute upload token expired mid-transfer.",
+    "steps": [
+      "Check the file size against your plan limit (100 MB Starter, 2 GB Pro/Business, 10 GB Enterprise).",
+      "Confirm the file type is on the allow list - no executables, nested archives, or extensionless files.",
+      "Retry the upload from a fresh page load so a new 15 minute token is issued.",
+      "For files over 500 MB, keep the tab in the foreground so the resumable chunked transfer is not throttled.",
+      "If it still fails, send support the file name, size, type and the timestamp of the attempt."
+    ],
+    "doc": "tech-err-5012-upload"
+  },
+  "ERR_5108": {
+    "title": "Export archive too large",
+    "family": "storage",
+    "severity": "medium",
+    "cause": "The generated export archive exceeded the 10 GB per-job limit.",
+    "steps": [
+      "Narrow the export date range.",
+      "Export in parts and re-run.",
+      "Exclude attachments if you only need the records."
+    ],
+    "doc": "tech-export-slow"
+  },
+  "ERR_5140": {
+    "title": "Storage quota exhausted",
+    "family": "storage",
+    "severity": "high",
+    "cause": "The workspace has reached its total storage limit, so new writes to storage are rejected.",
+    "steps": [
+      "Check Settings > Plan and usage for storage consumed.",
+      "Delete or archive large attachments, then empty the trash to reclaim space.",
+      "Raise the plan if usage is legitimate."
+    ],
+    "doc": "account-plan-and-usage"
+  },
+  "ERR_6002": {
+    "title": "Webhook endpoint unhealthy",
+    "family": "integrations",
+    "severity": "medium",
+    "cause": "Six consecutive delivery attempts failed over roughly 24 hours, so the endpoint was marked unhealthy and delivery paused.",
+    "steps": [
+      "Confirm the endpoint returns 2xx within 5 seconds.",
+      "Check the signature verification is not rejecting valid events.",
+      "Re-enable the endpoint under Settings > Integrations > Webhooks and replay the missed events."
+    ],
+    "doc": "tech-webhooks"
+  },
+  "ERR_6015": {
+    "title": "Integration token revoked",
+    "family": "integrations",
+    "severity": "medium",
+    "cause": "The OAuth token for the integration was revoked upstream, usually because the granting account lost access on the other side.",
+    "steps": [
+      "Reconnect the integration from Settings > Integrations.",
+      "Grant the scopes with an account that will stay active."
+    ],
+    "doc": "onboarding-integrations"
+  },
+  "ERR_1077": {
+    "title": "Reset link expired",
+    "family": "authentication",
+    "severity": "low",
+    "cause": "Password reset links are valid for one hour and single use.",
+    "steps": [
+      "Request a fresh reset link.",
+      "Open it in the same browser you requested it from.",
+      "If SSO is enforced, sign in through the identity provider instead."
+    ],
+    "doc": "account-password-reset"
+  },
+  "ERR_2044": {
+    "title": "Seat limit reached",
+    "family": "permissions",
+    "severity": "low",
+    "cause": "The invitation could not be sent because every seat included in the plan is in use.",
+    "steps": [
+      "Remove an inactive member to free a seat, or raise the plan.",
+      "Note that Viewers are free on Business and Enterprise and do not consume a seat."
+    ],
+    "doc": "account-add-team-member"
+  },
+  "ERR_3112": {
+    "title": "Payment method rejected",
+    "family": "validation",
+    "severity": "high",
+    "cause": "The card was declined, or the card type is not supported (prepaid cards and PayPal are not accepted).",
+    "steps": [
+      "Update the card under Billing > Payment method - the open invoice retries immediately.",
+      "Ask the bank whether recurring international payments are blocked.",
+      "Add a backup card so a single decline does not interrupt service."
+    ],
+    "doc": "billing-payment-failed"
+  }
+}
