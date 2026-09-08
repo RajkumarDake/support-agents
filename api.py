@@ -9,7 +9,6 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from agents.escalation.tools import read_queue
-from agents.knowledge.tools import corpus_size
 from graph import run_ticket
 from trace import TRACE_DIR, print_trace
 
@@ -35,9 +34,8 @@ def index() -> FileResponse:
 
 @app.get("/health")
 def health() -> dict:
-    out = {"status": "ok", "docs_indexed": corpus_size(), "queue_depth": len(read_queue())}
-    log.info("GET /health -> %s", out)
-    return out
+    log.info("GET /health")
+    return {"status": "ok"}
 
 
 @app.post("/ticket")
