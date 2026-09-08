@@ -103,8 +103,7 @@ Normal. The family is the subsystem, not the action.
 
 ## Related articles
 
-- tech-service-status, account-audit-logs, tech-api-rate-limits, tech-err-5012-upload,
-  onboarding-glossary.
+- tech-service-status, account-audit-logs, tech-api-rate-limits.
 
 ## If this did not help
 

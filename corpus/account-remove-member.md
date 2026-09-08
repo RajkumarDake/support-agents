@@ -90,7 +90,6 @@ invoice; on annual plans the credit sits in Billing > Credits until the renewal.
 - account-add-team-member - inviting someone new.
 - account-seat-reassignment - swapping one person for another cleanly.
 - account-roles-permissions - what you are taking away.
-- refund-downgrade-credit - how the credit behaves.
 
 ## If this did not help
 

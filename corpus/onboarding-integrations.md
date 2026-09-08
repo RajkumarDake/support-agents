@@ -99,8 +99,7 @@ integration's channel configuration.
 
 ## Related articles
 
-- tech-integrations-troubleshooting, tech-webhooks, tech-api-keys, onboarding-notifications,
-  onboarding-first-week.
+- tech-integrations-troubleshooting, tech-webhooks, tech-api-keys.
 
 ## If this did not help
 

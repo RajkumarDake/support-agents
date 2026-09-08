@@ -7,7 +7,8 @@ category: technical
 
 Exports run as background jobs, so there is no progress bar to watch and no obvious signal when
 something has gone wrong. This article is the diagnosis path for an export that is taking too long
-or has apparently vanished. For how to run one in the first place, see tech-data-export.
+or has apparently vanished - an export taking forever, an export stuck or never finishing, or a
+download link that never arrived. For how to run one in the first place, see tech-data-export.
 
 ## What normal looks like
 
@@ -90,8 +91,7 @@ minutes is expected rather than a fault.
 
 ## Related articles
 
-- tech-data-export, tech-storage-quota, tech-upload-limits, account-close-workspace,
-  tech-service-status.
+- tech-data-export, tech-storage-quota, tech-upload-limits.
 
 ## If this did not help
 

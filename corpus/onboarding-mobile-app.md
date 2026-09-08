@@ -94,8 +94,7 @@ OS permission first, app setting second, then check whether the project is muted
 
 ## Related articles
 
-- tech-mobile-sync, onboarding-notifications, account-session-timeout, tech-sso-saml,
-  account-downgrade-plan, tech-service-status.
+- tech-mobile-sync, onboarding-notifications, account-session-timeout.
 
 ## If this did not help
 

@@ -90,7 +90,6 @@ Reset two-factor. They then enrol again at their next sign-in. Admins cannot res
 - account-password-reset - the reset flow with 2FA in the way.
 - account-session-timeout - how long a verified session lasts.
 - tech-sso-saml - enforcing a second factor at the identity provider.
-- account-audit-logs - who enabled or reset 2FA and when.
 
 ## If this did not help
 

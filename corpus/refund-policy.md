@@ -84,8 +84,7 @@ Ask anyway with the invoice ID and the circumstances. A human reads it.
 
 ## Related articles
 
-- refund-how-to-request, refund-timeline, refund-cancellation, refund-duplicate-charge,
-  refund-downgrade-credit, refund-outage-credit, billing-invoice-dispute.
+- refund-how-to-request, refund-timeline, refund-cancellation.
 
 ## If this did not help
 

@@ -83,8 +83,7 @@ search by that.
 
 ## Related articles
 
-- refund-duplicate-charge, billing-proration, billing-invoice-access, refund-timeline,
-  billing-dispute-chargeback, tech-service-status.
+- refund-duplicate-charge, billing-proration, billing-invoice-access.
 
 ## If this did not help
 

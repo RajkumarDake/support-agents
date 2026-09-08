@@ -94,8 +94,7 @@ fresh and their tokens are gone for good.
 
 ## Related articles
 
-- account-add-team-member, account-remove-member, account-guest-viewer-access,
-  billing-seat-pricing, billing-proration.
+- account-add-team-member, account-remove-member, account-guest-viewer-access.
 
 ## If this did not help
 

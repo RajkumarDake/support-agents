@@ -92,8 +92,7 @@ Check whether it is muted - the bell icon in the project shows the state.
 
 ## Related articles
 
-- onboarding-mobile-app, onboarding-integrations, account-plan-and-usage,
-  billing-update-billing-details, tech-mobile-sync, account-guest-viewer-access.
+- onboarding-mobile-app, onboarding-integrations, account-plan-and-usage.
 
 ## If this did not help
 

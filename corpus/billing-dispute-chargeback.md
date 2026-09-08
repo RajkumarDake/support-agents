@@ -88,8 +88,7 @@ Call the bank the same day. Early withdrawals are much easier than late ones.
 
 ## Related articles
 
-- billing-duplicate-charge, billing-invoice-dispute, billing-payment-failed,
-  refund-duplicate-charge, refund-policy.
+- billing-duplicate-charge, billing-invoice-dispute, billing-payment-failed.
 
 ## If this did not help
 

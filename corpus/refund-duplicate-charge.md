@@ -85,8 +85,7 @@ or two workspaces. Send both invoice IDs and we will identify which is which.
 
 ## Related articles
 
-- billing-duplicate-charge, refund-policy, refund-timeline, refund-how-to-request,
-  billing-invoice-access, billing-dispute-chargeback, tech-service-status.
+- billing-duplicate-charge, refund-policy, refund-timeline.
 
 ## If this did not help
 

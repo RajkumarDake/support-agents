@@ -88,9 +88,7 @@ Set the digest default to daily or weekly under Settings > Notifications.
 
 ## Related articles
 
-- onboarding-invite-flow, onboarding-import-data, onboarding-integrations,
-  onboarding-notifications, onboarding-glossary, onboarding-mobile-app,
-  account-plan-and-usage.
+- onboarding-invite-flow, onboarding-import-data, onboarding-integrations.
 
 ## If this did not help
 

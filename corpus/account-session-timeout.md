@@ -89,8 +89,7 @@ tokens too. Create a workspace token instead, see tech-api-keys.
 
 ## Related articles
 
-- account-password-reset, account-two-factor, tech-sso-saml, tech-api-keys,
-  account-audit-logs.
+- account-password-reset, account-two-factor, tech-sso-saml.
 
 ## If this did not help
 

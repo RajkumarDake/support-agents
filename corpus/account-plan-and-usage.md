@@ -93,7 +93,7 @@ boundary in your time zone. billing-cycle covers this.
 
 ## Related articles
 
-- billing-proration, account-downgrade-plan, tech-storage-quota, tech-api-rate-limits.
+- billing-proration, account-downgrade-plan, tech-storage-quota.
 
 ## If this did not help
 

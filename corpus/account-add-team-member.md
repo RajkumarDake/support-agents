@@ -99,7 +99,6 @@ Projects, or from the project's own member list.
 - account-roles-permissions - what each role can actually do.
 - account-remove-member - freeing a seat.
 - billing-seat-pricing - how seats are counted and billed.
-- onboarding-invite-flow - the new teammate's first experience.
 
 ## If this did not help
 

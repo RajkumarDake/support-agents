@@ -97,8 +97,7 @@ The workspace dropped below Business.
 
 ## Related articles
 
-- tech-sso-saml, account-downgrade-plan, account-close-workspace, tech-browser-support,
-  account-audit-logs.
+- tech-sso-saml, account-downgrade-plan, account-close-workspace.
 
 ## If this did not help
 

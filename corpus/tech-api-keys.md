@@ -105,8 +105,7 @@ There is no way to display it again. Revoke and create a new one.
 
 ## Related articles
 
-- tech-api-rate-limits, tech-webhooks, tech-webhook-signatures, account-roles-permissions,
-  account-session-timeout, account-audit-logs.
+- tech-api-rate-limits, tech-webhooks, tech-webhook-signatures.
 
 ## If this did not help
 

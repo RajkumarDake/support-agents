@@ -91,8 +91,7 @@ The plan is monthly, or the billing country on file is outside the SEPA area. Bo
 
 ## Related articles
 
-- billing-payment-failed, billing-cycle, billing-tax-vat, billing-update-billing-details,
-  billing-dispute-chargeback.
+- billing-payment-failed, billing-cycle, billing-tax-vat.
 
 ## If this did not help
 

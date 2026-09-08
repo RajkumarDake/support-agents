@@ -86,8 +86,7 @@ Expected - the billing email is separate. Change it under Billing > Business det
 
 ## Related articles
 
-- account-roles-permissions, account-remove-member, billing-payment-methods,
-  billing-update-billing-details, account-close-workspace.
+- account-roles-permissions, account-remove-member, billing-payment-methods.
 
 ## If this did not help
 

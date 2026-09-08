@@ -5,9 +5,10 @@ category: refunds
 
 # Cancelling a subscription
 
-Cancelling stops the next charge. It does not delete anything, it does not take effect
-immediately, and it is fully reversible. If you want the data gone as well, that is a separate and
-much more serious action - see account-close-workspace.
+To cancel a subscription, go to Settings > Plan and click Cancel subscription. Cancelling stops
+the next charge. It does not delete anything, it does not take effect immediately, and it is fully
+reversible. If you want the data gone as well, that is a separate and much more serious action -
+see account-close-workspace.
 
 ## Steps
 
@@ -90,8 +91,7 @@ Cancellation does not do that. See account-close-workspace, and export first.
 
 ## Related articles
 
-- refund-policy, refund-how-to-request, account-downgrade-plan, account-close-workspace,
-  billing-cycle, tech-data-export.
+- refund-policy, refund-how-to-request, account-downgrade-plan.
 
 ## If this did not help
 

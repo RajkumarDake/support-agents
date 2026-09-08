@@ -97,7 +97,6 @@ Free Viewers are a Business and Enterprise feature. On Starter and Pro a Viewer 
 - account-add-team-member - inviting with a role.
 - account-guest-viewer-access - free Viewer seats in detail.
 - account-transfer-ownership - moving the Owner role.
-- billing-seat-pricing - which roles cost money.
 
 ## If this did not help
 

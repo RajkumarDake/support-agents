@@ -86,8 +86,7 @@ so - exceptions for prolonged outages are decided by a support lead.
 
 ## Related articles
 
-- refund-policy, refund-timeline, refund-cancellation, refund-duplicate-charge,
-  refund-downgrade-credit, refund-outage-credit, billing-invoice-access.
+- refund-policy, refund-timeline, refund-cancellation.
 
 ## If this did not help
 

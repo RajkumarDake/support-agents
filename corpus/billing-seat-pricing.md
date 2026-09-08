@@ -89,8 +89,7 @@ Proration and credits. billing-proration walks through each line type.
 
 ## Related articles
 
-- billing-proration, account-add-team-member, account-remove-member,
-  account-seat-reassignment, account-guest-viewer-access, account-plan-and-usage.
+- billing-proration, account-add-team-member, account-remove-member.
 
 ## If this did not help
 

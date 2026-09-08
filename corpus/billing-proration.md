@@ -89,8 +89,7 @@ Billing > Credits until the renewal.
 
 ## Related articles
 
-- billing-seat-pricing, billing-cycle, billing-invoice-access, refund-downgrade-credit,
-  account-downgrade-plan, billing-duplicate-charge.
+- billing-seat-pricing, billing-cycle, billing-invoice-access.
 
 ## If this did not help
 

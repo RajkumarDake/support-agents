@@ -90,8 +90,7 @@ Send us your exemption certificate through support. Once on file it applies to f
 
 ## Related articles
 
-- billing-update-billing-details, billing-invoice-access, billing-invoice-dispute,
-  billing-cycle, refund-downgrade-credit.
+- billing-update-billing-details, billing-invoice-access, billing-invoice-dispute.
 
 ## If this did not help
 

@@ -91,8 +91,7 @@ It is forfeited. If the amount is significant, contact support before you confir
 
 ## Related articles
 
-- account-downgrade-plan, billing-proration, billing-seat-pricing, refund-policy,
-  refund-outage-credit, refund-cancellation, account-close-workspace.
+- account-downgrade-plan, billing-proration, billing-seat-pricing.
 
 ## If this did not help
 

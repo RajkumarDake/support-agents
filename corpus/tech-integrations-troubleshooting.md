@@ -110,8 +110,7 @@ Integrations screen.
 
 ## Related articles
 
-- onboarding-integrations, tech-webhooks, tech-webhook-signatures, tech-api-rate-limits,
-  tech-api-keys, tech-service-status.
+- onboarding-integrations, tech-webhooks, tech-webhook-signatures.
 
 ## If this did not help
 

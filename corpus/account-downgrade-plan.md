@@ -5,7 +5,8 @@ category: account
 
 # Downgrading your subscription
 
-Downgrading moves the workspace to a cheaper plan. Unlike an upgrade, it does not take effect
+Downgrading moves the workspace to a cheaper plan - Enterprise to Business, Business to Pro, or
+Pro to Starter. Unlike an upgrade, a downgrade does not take effect
 immediately: you keep the higher plan and its features until the end of the current billing
 period, and the saving arrives as account credit rather than as money back. The important part of
 this article is the list of things that stop working the moment the downgrade lands, because
@@ -98,7 +99,7 @@ plan's limits - audit entries in particular - does not come back.
 
 ## Related articles
 
-- billing-proration, refund-downgrade-credit, refund-cancellation, account-plan-and-usage.
+- billing-proration, refund-downgrade-credit, refund-cancellation.
 
 ## If this did not help
 

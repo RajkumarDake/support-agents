@@ -109,8 +109,7 @@ which of the causes applied.
 
 ## Related articles
 
-- tech-upload-limits, tech-storage-quota, tech-service-status, onboarding-import-data,
-  tech-error-codes-overview.
+- tech-upload-limits, tech-storage-quota, tech-service-status.
 
 ## If this did not help
 

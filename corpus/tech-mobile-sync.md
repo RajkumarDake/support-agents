@@ -94,8 +94,7 @@ Check whether the workspace downgraded to Starter, see account-downgrade-plan.
 
 ## Related articles
 
-- onboarding-mobile-app, tech-service-status, account-session-timeout, tech-sso-saml,
-  onboarding-notifications.
+- onboarding-mobile-app, tech-service-status, account-session-timeout.
 
 ## If this did not help
 

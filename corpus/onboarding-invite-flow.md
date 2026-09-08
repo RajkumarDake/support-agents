@@ -93,8 +93,7 @@ The seat cap was reached between the invitation and the acceptance.
 
 ## Related articles
 
-- account-add-team-member, account-roles-permissions, onboarding-first-week,
-  onboarding-mobile-app, tech-sso-saml.
+- account-add-team-member, account-roles-permissions, onboarding-first-week.
 
 ## If this did not help
 

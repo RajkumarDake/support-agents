@@ -94,8 +94,7 @@ account-scim-provisioning.
 
 ## Related articles
 
-- onboarding-first-week, account-roles-permissions, billing-seat-pricing,
-  tech-error-codes-overview.
+- onboarding-first-week, account-roles-permissions, billing-seat-pricing.
 
 ## If this did not help
 

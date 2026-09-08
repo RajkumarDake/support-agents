@@ -88,8 +88,7 @@ You are a Member or Viewer. Billing is Owner and Admin only.
 
 ## Related articles
 
-- billing-tax-vat, billing-invoice-access, billing-payment-methods, billing-cycle,
-  account-transfer-ownership, billing-invoice-dispute.
+- billing-tax-vat, billing-invoice-access, billing-payment-methods.
 
 ## If this did not help
 

@@ -90,8 +90,7 @@ counted as downtime.
 
 ## Related articles
 
-- refund-outage-credit, tech-error-codes-overview, tech-err-5012-upload, tech-mobile-sync,
-  tech-webhooks, tech-sso-saml, billing-duplicate-charge.
+- refund-outage-credit, tech-error-codes-overview, tech-err-5012-upload.
 
 ## If this did not help
 

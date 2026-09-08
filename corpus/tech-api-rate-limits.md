@@ -99,8 +99,7 @@ That is the token, not the limit. See tech-api-keys.
 
 ## Related articles
 
-- tech-api-keys, account-plan-and-usage, tech-webhooks, onboarding-integrations,
-  account-downgrade-plan, billing-cycle.
+- tech-api-keys, account-plan-and-usage, tech-webhooks.
 
 ## If this did not help
 

@@ -105,8 +105,7 @@ verification.
 
 ## Related articles
 
-- tech-webhook-signatures, tech-integrations-troubleshooting, tech-api-keys,
-  tech-api-rate-limits, onboarding-integrations, tech-service-status.
+- tech-webhook-signatures, tech-integrations-troubleshooting, tech-api-keys.
 
 ## If this did not help
 

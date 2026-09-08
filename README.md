@@ -45,7 +45,7 @@ run. The Response Agent merges every result into one reply that answers every pr
 | Agent | Job | Tools |
 |---|---|---|
 | **Router** | split the mail, dispatch sub-queries, classify the ticket | `detect_sentiment`, `check_priority_keywords` |
-| **Knowledge** | BM25 retrieval over 40 help docs | `search_docs`, `filter_by_category` |
+| **Knowledge** | BM25 retrieval over 55 help docs | `search_docs`, `filter_by_category` |
 | **Account** | plan, invoices, usage; flags duplicate charges | `get_customer`, `get_invoices`, `usage_summary` |
 | **Troubleshoot** | match error codes and open incidents, order fix steps | `lookup_error`, `known_issues` |
 | **Response** | merge results into one cited reply | `get_template`, `check_tone` |
@@ -139,7 +139,7 @@ state.py            typed state
 llm.py              OpenRouter client (glm-5.3-flash) + fallback
 trace.py            spans, trace tree, JSON output
 agents/<name>/      agent.py + tools.py
-corpus/             40 help docs
+corpus/             55 help docs
 data/               customers, invoices, error codes, incidents, human queue
 static/index.html   UI
 ```

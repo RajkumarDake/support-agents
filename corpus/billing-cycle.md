@@ -87,8 +87,7 @@ refund-policy explains the exceptions.
 
 ## Related articles
 
-- billing-proration, billing-invoice-access, billing-payment-failed, account-plan-and-usage,
-  refund-cancellation.
+- billing-proration, billing-invoice-access, billing-payment-failed.
 
 ## If this did not help
 

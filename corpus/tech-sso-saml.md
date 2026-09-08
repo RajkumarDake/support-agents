@@ -76,6 +76,10 @@ tech-service-status.
 
 ## Troubleshooting
 
+People describe this problem in many ways - SSO login failing, SAML sign-in rejected, cannot log
+in through Okta, the identity provider loops, single sign-on broken. They are nearly all the same
+two causes below.
+
 **Symptom: ERR_1104 for everyone, suddenly.**
 Certificate or metadata. Re-download and re-upload the metadata XML. Check whether your provider
 rotated a signing certificate.
@@ -106,8 +110,7 @@ The workspace dropped below Business.
 
 ## Related articles
 
-- account-scim-provisioning, account-two-factor, account-session-timeout,
-  account-password-reset, tech-service-status, account-audit-logs.
+- account-scim-provisioning, account-two-factor, account-session-timeout.
 
 ## If this did not help
 

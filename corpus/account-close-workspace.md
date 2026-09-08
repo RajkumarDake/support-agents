@@ -93,8 +93,7 @@ we cannot promise recovery, there is nothing at all to discuss once that window 
 
 ## Related articles
 
-- refund-cancellation, refund-policy, tech-data-export, account-transfer-ownership,
-  billing-invoice-access.
+- refund-cancellation, refund-policy, tech-data-export.
 
 ## If this did not help
 

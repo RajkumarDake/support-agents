@@ -90,8 +90,7 @@ often the practical alternative.
 
 ## Related articles
 
-- account-session-timeout, account-two-factor, tech-service-status, onboarding-mobile-app,
-  billing-payment-methods.
+- account-session-timeout, account-two-factor, tech-service-status.
 
 ## If this did not help
 

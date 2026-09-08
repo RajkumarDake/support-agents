@@ -91,8 +91,7 @@ Check Billing > Credits for the balance. On annual plans it waits until the rene
 
 ## Related articles
 
-- tech-service-status, refund-downgrade-credit, refund-policy, refund-how-to-request,
-  billing-invoice-dispute, tech-error-codes-overview.
+- tech-service-status, refund-downgrade-credit, refund-policy.
 
 ## If this did not help
 

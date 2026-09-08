@@ -82,8 +82,7 @@ thread.
 
 ## Related articles
 
-- refund-how-to-request, refund-policy, refund-duplicate-charge, refund-downgrade-credit,
-  refund-outage-credit, billing-invoice-access.
+- refund-how-to-request, refund-policy, refund-duplicate-charge.
 
 ## If this did not help
 

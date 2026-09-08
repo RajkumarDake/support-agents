@@ -96,8 +96,7 @@ day.
 
 ## Related articles
 
-- billing-cycle, billing-tax-vat, billing-update-billing-details, billing-duplicate-charge,
-  billing-invoice-dispute, refund-timeline.
+- billing-cycle, billing-tax-vat, billing-update-billing-details.
 
 ## If this did not help
 

@@ -95,8 +95,7 @@ by removing the stale account after confirming which one has the current email.
 
 ## Related articles
 
-- tech-sso-saml, account-roles-permissions, account-seat-reassignment,
-  account-guest-viewer-access, account-audit-logs.
+- tech-sso-saml, account-roles-permissions, account-seat-reassignment.
 
 ## If this did not help
 

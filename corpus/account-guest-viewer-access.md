@@ -87,8 +87,7 @@ Exports need Member or above. Ask a Member to run it and share the archive.
 
 ## Related articles
 
-- account-roles-permissions, account-add-team-member, billing-seat-pricing,
-  account-downgrade-plan, account-seat-reassignment.
+- account-roles-permissions, account-add-team-member, billing-seat-pricing.
 
 ## If this did not help
 

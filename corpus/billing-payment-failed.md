@@ -97,8 +97,7 @@ the invoice ID.
 
 ## Related articles
 
-- billing-payment-methods, billing-invoice-access, billing-cycle, billing-dispute-chargeback,
-  refund-policy.
+- billing-payment-methods, billing-invoice-access, billing-cycle.
 
 ## If this did not help
 

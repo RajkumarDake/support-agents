@@ -94,8 +94,7 @@ duplicates go to the back of the queue.
 
 ## Related articles
 
-- billing-invoice-access, billing-proration, billing-seat-pricing, billing-tax-vat,
-  billing-duplicate-charge, billing-dispute-chargeback, refund-how-to-request.
+- billing-invoice-access, billing-proration, billing-seat-pricing.
 
 ## If this did not help
 

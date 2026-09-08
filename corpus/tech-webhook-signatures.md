@@ -97,8 +97,7 @@ first, process asynchronously.
 
 ## Related articles
 
-- tech-webhooks, tech-api-keys, tech-integrations-troubleshooting, tech-sso-saml,
-  account-audit-logs.
+- tech-webhooks, tech-api-keys, tech-integrations-troubleshooting.
 
 ## If this did not help
 
