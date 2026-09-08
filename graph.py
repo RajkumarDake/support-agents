@@ -23,12 +23,8 @@ NODES = {
 
 
 def fan_out(state: SupportState) -> list[str]:
-    """Every agent the router dispatched runs in the same superstep."""
+    """The router's dispatch list becomes the set of agents that run, all in one superstep."""
     return [d["agent"] for d in state["dispatches"]] or ["knowledge"]
-
-
-def respond(state: SupportState) -> dict:
-    return {"answer": state.get("draft", "")}
 
 
 def build_graph():
@@ -37,14 +33,12 @@ def build_graph():
     for name in AGENTS:
         g.add_node(name, NODES[name])
     g.add_node("response", response_agent)
-    g.add_node("respond", respond)
 
     g.set_entry_point("router")
     g.add_conditional_edges("router", fan_out, AGENTS)
     for name in AGENTS:
         g.add_edge(name, "response")
-    g.add_edge("response", "respond")
-    g.add_edge("respond", END)
+    g.add_edge("response", END)
     return g.compile()
 
 

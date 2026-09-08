@@ -66,6 +66,7 @@ def response_agent(state: SupportState) -> dict:
     merged = ", ".join(r["agent"].split()[0].lower() for r in results)
     return {
         "draft": draft,
+        "answer": draft,
         "tone_flags": flags,
         "tool_calls": tag(calls, "Response Agent"),
         "trace": [span("Response Agent", t0, f"sources: {', '.join(sources) or 'none'}",

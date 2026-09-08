@@ -1,8 +1,9 @@
 # Multi-Agent Customer Support
 
-A support system built as a LangGraph state machine. A ticket comes in, a router agent splits
-it into problems and dispatches a sub-query to every agent needed, each agent solves its piece
-with its own tools, and risky tickets also go to an escalation agent that hands them to a human.
+A support system built as a LangGraph state machine. A mail comes in, the router agent splits it
+into separate problems and sends a sub-query to the agent that can solve each one. Every agent
+works its own piece with its own tools and reports its findings back. The response agent collects
+all of them and writes one reply.
 
 ![the UI after one ticket](docs/screenshot.png)
 
@@ -10,17 +11,17 @@ with its own tools, and risky tickets also go to an escalation agent that hands 
 
 ```mermaid
 flowchart TD
-    A[Router Agent] -->|sub-query| B[Knowledge Agent]
-    A -->|sub-query| C[Account Agent]
-    A -->|sub-query| D[Troubleshoot Agent]
-    A -->|refund / angry / high priority| E[Escalation Agent]
+    A[Router Agent] -->|sub-query 1| B[Knowledge Agent]
+    A -->|sub-query 2| C[Account Agent]
+    A -->|sub-query 3| D[Troubleshoot Agent]
+    A -->|risk| E[Escalation Agent]
 
-    B --> F[Response Agent]
-    C --> F
-    D --> F
-    E --> F
+    B -->|findings| F[Response Agent]
+    C -->|findings| F
+    D -->|findings| F
+    E -->|handoff| F
 
-    F --> G[reply to customer]
+    F --> G[one reply to the customer]
 
     style A fill:#1f2937,stroke:#60a5fa,color:#fff
     style E fill:#1f2937,stroke:#f87171,color:#fff
@@ -28,17 +29,23 @@ flowchart TD
     style G fill:#1f2937,stroke:#34d399,color:#fff
 ```
 
-The router fans out, it does not pick one path. A mail saying *"I was charged twice and my
-uploads fail with ERR_5012"* dispatches two sub-queries:
+The router does not pick one path, it fans out. A mail saying *"I was charged twice and my
+uploads fail with ERR_5012"* is two problems, so it produces two sub-queries:
 
 ```python
 [{"agent": "account",      "query": "check for duplicate charges", "details": {"email": "..."}},
  {"agent": "troubleshoot", "query": "upload fails with ERR_5012",  "details": {"error_code": "ERR_5012"}}]
 ```
 
-Both agents run in the same LangGraph superstep and append to `state["results"]`, an append-only
-channel, so parallel writes merge instead of clobbering. Agents that were not dispatched never
-run. The Response Agent merges every result into one reply that answers every problem.
+The account agent never sees the upload problem, the troubleshoot agent never sees the billing
+one. Each gets only its own question and the details it needs.
+
+Both run in the same LangGraph superstep and append their findings to `state["results"]`, an
+append-only channel, so parallel writes merge instead of clobbering each other. Agents that were
+not dispatched never run.
+
+The response agent then reads every result in state and writes a single reply that answers every
+problem, citing the record ids and doc ids the agents actually found.
 
 ## The agents
 
