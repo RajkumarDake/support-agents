@@ -163,8 +163,8 @@ demo.py, cli.py   the two entry points
 
 ## Known limits
 
-- One LLM call per agent, in sequence, on a reasoning model: a live ticket takes **25-60
-  seconds**. The per-agent breakdown is in every trace. `demo.py` runs the five tickets
+- One LLM call per agent, in sequence, on a reasoning model whose reasoning cannot be
+  disabled: a live ticket takes **25-90 seconds**, and it varies a lot with provider load. The per-agent breakdown is in every trace. `demo.py` runs the five tickets
   concurrently so the whole demo is ~90 seconds.
 - Results are cached in-process; `traces/*.json` is the durable copy. There is no database.
 - `data/human_queue.json` is a file, not a queue service. `notify_team` logs instead of paging.

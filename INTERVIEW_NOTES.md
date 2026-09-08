@@ -119,4 +119,5 @@ Files to have open: `graph.py` (the edges), `agents/evaluator.py` (the escalatio
   against human judgements - there is no labelled set here.
 - There are no automated tests in this repo. The verification is the demo run and the fallback
   run.
-- A live ticket takes 25-60 seconds because it is six sequential calls to a reasoning model.
+- A live ticket takes 25-90 seconds, and the spread is wide. It is six sequential calls to a
+  reasoning model that cannot be told to skip its reasoning; latency is provider-dependent.
