@@ -1,4 +1,4 @@
-"""The graph: router fans out to specialists, response merges, escalation catches risky tickets."""
+"""The graph: the router fans out to the agents a mail needs, the response agent merges them."""
 
 import random
 import time
@@ -14,48 +14,36 @@ from agents.troubleshoot.agent import troubleshoot_agent
 from state import SupportState, new_state
 from trace import save_trace
 
-SPECIALISTS = ["knowledge", "account", "troubleshoot"]
+AGENTS = {
+    "knowledge": knowledge_agent,
+    "account": account_agent,
+    "troubleshoot": troubleshoot_agent,
+    "escalation": escalation_agent,
+}
 
 
 def fan_out(state: SupportState) -> list[str]:
-    """Router picked one or more agents; each one runs in the same superstep."""
+    """Every agent the router dispatched runs in the same superstep."""
     return [d["agent"] for d in state["dispatches"]] or ["knowledge"]
 
 
-def needs_human(state: SupportState) -> str:
-    """Refunds, anger, legal and high-priority tickets go to a human."""
-    if state.get("category") == "refund":
-        return "escalation"
-    if state.get("sentiment") == "angry":
-        return "escalation"
-    if state.get("priority") == "high":
-        return "escalation"
-    return "respond"
-
-
 def respond(state: SupportState) -> dict:
-    answer = state.get("draft", "")
-    if state.get("escalated"):
-        priority = state.get("handoff", {}).get("priority", "medium")
-        answer += (f"\n\n---\nThis ticket has been passed to a support specialist "
-                   f"(priority: {priority}). They will follow up directly.")
-    return {"answer": answer}
+    return {"answer": state.get("draft", "")}
 
 
 def build_graph():
     g = StateGraph(SupportState)
-    for name, node in [("router", router_agent), ("knowledge", knowledge_agent),
-                       ("account", account_agent), ("troubleshoot", troubleshoot_agent),
-                       ("response", response_agent), ("escalation", escalation_agent),
-                       ("respond", respond)]:
+    g.add_node("router", router_agent)
+    for name, node in AGENTS.items():
         g.add_node(name, node)
+    g.add_node("response", response_agent)
+    g.add_node("respond", respond)
 
     g.set_entry_point("router")
-    g.add_conditional_edges("router", fan_out, SPECIALISTS)
-    for name in SPECIALISTS:
+    g.add_conditional_edges("router", fan_out, list(AGENTS))
+    for name in AGENTS:
         g.add_edge(name, "response")
-    g.add_conditional_edges("response", needs_human, ["escalation", "respond"])
-    g.add_edge("escalation", "respond")
+    g.add_edge("response", "respond")
     g.add_edge("respond", END)
     return g.compile()
 

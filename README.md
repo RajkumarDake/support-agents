@@ -2,7 +2,7 @@
 
 A support system built as a LangGraph state machine. A ticket comes in, a router agent splits
 it into problems and dispatches a sub-query to every agent needed, each agent solves its piece
-with its own tools, and risky tickets go to a human instead of being auto-answered.
+with its own tools, and risky tickets also go to an escalation agent that hands them to a human.
 
 ![the UI after one ticket](docs/screenshot.png)
 
@@ -13,18 +13,18 @@ flowchart TD
     A[Router Agent] -->|sub-query| B[Knowledge Agent]
     A -->|sub-query| C[Account Agent]
     A -->|sub-query| D[Troubleshoot Agent]
+    A -->|refund / angry / high priority| E[Escalation Agent]
 
-    B --> E[Response Agent]
-    C --> E
-    D --> E
+    B --> F[Response Agent]
+    C --> F
+    D --> F
+    E --> F
 
-    E -->|refund / angry / high priority| F[Escalation Agent]
-    E -->|everything else| G[respond]
-    F --> G
+    F --> G[reply to customer]
 
     style A fill:#1f2937,stroke:#60a5fa,color:#fff
-    style E fill:#1f2937,stroke:#fbbf24,color:#fff
-    style F fill:#1f2937,stroke:#f87171,color:#fff
+    style E fill:#1f2937,stroke:#f87171,color:#fff
+    style F fill:#1f2937,stroke:#fbbf24,color:#fff
     style G fill:#1f2937,stroke:#34d399,color:#fff
 ```
 
@@ -56,16 +56,17 @@ completes in under half a second with a grounded, cited answer.
 
 ## When a human takes over
 
-Not every ticket should be answered automatically. After the Response Agent merges the results,
-one check decides the terminal: refunds, angry customers and high-priority keywords go to the
-Escalation Agent, everything else goes straight out.
+Escalation is not a separate stage after the answer - it is one of the agents the router can
+dispatch. Refunds, angry customers and high-priority wording get an escalation dispatch
+alongside the specialists, so the facts still get gathered while the handoff is written.
 
-The Escalation Agent does not just set a flag. It writes the handoff note a human reads first -
-what the customer wants, what the agents already found with record ids, and the judgement call
-the automation cannot make - then queues it with a priority and an SLA.
+The Escalation Agent writes the note a human reads first (what the customer wants, why it needs
+a human, what to decide), queues it with a priority and an SLA, and pages the on-call channel.
+Its result goes into `state["results"]` like any other agent, so the Response Agent folds it into
+the same reply: the customer gets the facts *and* is told a specialist is picking it up.
 
-So a reply can be well written and still escalate. The double-charge ticket produces a complete,
-cited answer and *still* goes to a human, because refunds are a money decision.
+So a ticket can produce a complete, cited answer and still be handed to a human. The
+double-charge mail does exactly that, because refunds are a money decision.
 
 ## Run it
 

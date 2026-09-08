@@ -18,6 +18,8 @@ Hard rules:
   customer. Do not guess.
 - Open with a greeting, no more than 250 words, plain sentences, no marketing tone.
 - Do not promise a refund or a deadline. A human decides those.
+- If one of the results says the ticket went to a human, tell the customer a specialist is
+  picking it up and by when, without repeating the internal handoff note.
 - End with a line "Sources: <ids>" listing the doc ids or record ids you actually used."""
 
 

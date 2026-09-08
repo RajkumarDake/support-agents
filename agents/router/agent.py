@@ -7,7 +7,7 @@ from llm import LLMError, call_llm_json, warn_fallback
 from state import SupportState
 from trace import record, span, tag
 
-AGENTS = ["knowledge", "account", "troubleshoot"]
+AGENTS = ["knowledge", "account", "troubleshoot", "escalation"]
 CATEGORIES = ["billing", "technical", "account", "refund", "unclear"]
 
 SYSTEM = """You are the router in a customer support system. One mail often contains several
@@ -17,13 +17,17 @@ Agents:
 - account: needs THIS customer's records - invoices, charges, plan, seats, usage
 - troubleshoot: error codes, failures, crashes, uploads, sync, sign-in problems
 - knowledge: how-to, policy and general product questions answered from the help centre
+- escalation: a human must decide - refunds, cancellations, legal threats, an angry customer
 
 Only dispatch account when answering needs THIS customer's records. A general how-to or policy
 question is a knowledge job, even when it is about billing or seats.
 
+Dispatch escalation alongside the others whenever money is at stake or the customer is upset -
+the specialists still gather the facts, escalation writes the handoff for the human.
+
 For each problem write a short sub-query in your own words, plus the details that agent needs
 (account: {"email": "..."}, troubleshoot: {"error_code": "ERR_1234"}). Dispatch every agent the
-mail needs - one, two or three - but at most one dispatch per agent.
+mail needs - one to four - but at most one dispatch per agent.
 
 Also give the overall category: billing, technical, account, refund or unclear.
 
@@ -82,6 +86,11 @@ def router_agent(state: SupportState) -> dict:
         category = "refund"
         reason += " (refund wording present)"
 
+    # risk always reaches a human, even if the model missed it
+    if _needs_human(category, sentiment, priority) and \
+            not any(d["agent"] == "escalation" for d in dispatches):
+        dispatches.append({"agent": "escalation", "query": ticket, "details": {}})
+
     names = ", ".join(d["agent"] for d in dispatches)
     return {
         "category": category,
@@ -94,6 +103,13 @@ def router_agent(state: SupportState) -> dict:
                        f"dispatched: {names} | category={category} "
                        f"sentiment={sentiment['sentiment']} priority={priority['priority']}")],
     }
+
+
+def _needs_human(category: str, sentiment: dict, priority: dict) -> bool:
+    """Refunds, anger and high-priority wording always get a human handoff."""
+    return (category == "refund"
+            or sentiment["sentiment"] == "angry"
+            or priority["priority"] == "high")
 
 
 def clean_dispatches(raw: object, ticket: str, email: str) -> list[dict]:
