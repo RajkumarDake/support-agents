@@ -16,24 +16,28 @@ escalation edge off an evaluator node.
 
 ## The graph
 
-```
-                          ┌──────────────────────┐
-ingest ──> Router Agent ──┤ technical            ├──> Troubleshoot Agent ──┐
-                          │ billing|account|refund                         │
-                          │   + needs_account_data ──> Account Agent ──────┤
-                          │ everything else                                │
-                          └────────────────────────────────────────────────┴──> Knowledge Agent
-                                                                                      │
-                                                                                      v
-                                                                             Response Agent
-                                                                                      │
-                                                                                      v
-                                                                                 Evaluator
-                                                                              ╱             ╲
-                                                              confidence >= 0.60         low / refund
-                                                              and no risk flags          / angry / legal
-                                                                        ╱                     ╲
-                                                                   respond  <──  Escalation Agent
+```mermaid
+flowchart TD
+    A[ingest] --> B[Router Agent]
+
+    B -->|technical| C[Troubleshoot Agent]
+    B -->|billing / account / refund<br/>+ needs_account_data| D[Account Agent]
+    B -->|everything else| E[Knowledge Agent]
+
+    C --> E
+    D --> E
+
+    E --> F[Response Agent]
+    F --> G{Evaluator}
+
+    G -->|confidence >= 0.60<br/>no risk flags| H[respond]
+    G -->|low confidence / refund<br/>angry / legal| I[Escalation Agent]
+    I --> H
+
+    style B fill:#1f2937,stroke:#60a5fa,color:#fff
+    style G fill:#1f2937,stroke:#fbbf24,color:#fff
+    style I fill:#1f2937,stroke:#f87171,color:#fff
+    style H fill:#1f2937,stroke:#34d399,color:#fff
 ```
 
 Both specialists chain into the Knowledge Agent, so the writer always has help-doc citations on
