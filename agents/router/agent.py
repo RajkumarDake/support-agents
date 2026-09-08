@@ -4,11 +4,8 @@ import time
 
 from agents.router.tools import check_priority_keywords, detect_sentiment
 from llm import LLMError, call_llm_json, warn_fallback
-from state import SupportState
+from state import AGENTS, CATEGORIES, SupportState
 from trace import record, span, tag
-
-AGENTS = ["knowledge", "account", "troubleshoot", "escalation"]
-CATEGORIES = ["billing", "technical", "account", "refund", "unclear"]
 
 SYSTEM = """You are the router in a customer support system. One mail often contains several
 separate problems. Split it and dispatch each problem to the agent that can solve it.

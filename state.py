@@ -3,6 +3,10 @@
 import operator
 from typing import Annotated, Any, TypedDict
 
+# the agents the router can dispatch to - graph.py wires these, router.py picks from them
+AGENTS = ["knowledge", "account", "troubleshoot", "escalation"]
+CATEGORIES = ["billing", "technical", "account", "refund", "unclear"]
+
 
 class SupportState(TypedDict, total=False):
     ticket_id: str

@@ -11,10 +11,10 @@ from agents.knowledge.agent import knowledge_agent
 from agents.response.agent import response_agent
 from agents.router.agent import router_agent
 from agents.troubleshoot.agent import troubleshoot_agent
-from state import SupportState, new_state
+from state import AGENTS, SupportState, new_state
 from trace import save_trace
 
-AGENTS = {
+NODES = {
     "knowledge": knowledge_agent,
     "account": account_agent,
     "troubleshoot": troubleshoot_agent,
@@ -34,13 +34,13 @@ def respond(state: SupportState) -> dict:
 def build_graph():
     g = StateGraph(SupportState)
     g.add_node("router", router_agent)
-    for name, node in AGENTS.items():
-        g.add_node(name, node)
+    for name in AGENTS:
+        g.add_node(name, NODES[name])
     g.add_node("response", response_agent)
     g.add_node("respond", respond)
 
     g.set_entry_point("router")
-    g.add_conditional_edges("router", fan_out, list(AGENTS))
+    g.add_conditional_edges("router", fan_out, AGENTS)
     for name in AGENTS:
         g.add_edge(name, "response")
     g.add_edge("response", "respond")
