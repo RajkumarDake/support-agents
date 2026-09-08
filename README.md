@@ -2,8 +2,8 @@
 
 A support system built as a LangGraph state machine. A mail comes in, the router agent splits it
 into separate problems and sends a sub-query to the agent that can solve each one. Every agent
-works its own piece with its own tools and reports its findings back. The response agent collects
-all of them and writes one reply.
+works its own piece with its own tools and reports back to the router. The router hands the
+collected findings to the response agent, which writes one reply.
 
 ![the UI after one ticket](docs/screenshot.png)
 
@@ -16,11 +16,12 @@ flowchart TD
     A -->|sub-query 3| D[Troubleshoot Agent]
     A -->|risk| E[Escalation Agent]
 
-    B -->|findings| F[Response Agent]
-    C -->|findings| F
-    D -->|findings| F
-    E -->|handoff| F
+    B -->|findings| A
+    C -->|findings| A
+    D -->|findings| A
+    E -->|handoff| A
 
+    A ==>|all findings| F[Response Agent]
     F --> G[one reply to the customer]
 
     style A fill:#1f2937,stroke:#60a5fa,color:#fff
@@ -40,12 +41,13 @@ uploads fail with ERR_5012"* is two problems, so it produces two sub-queries:
 The account agent never sees the upload problem, the troubleshoot agent never sees the billing
 one. Each gets only its own question and the details it needs.
 
-Both run in the same LangGraph superstep and append their findings to `state["results"]`, an
-append-only channel, so parallel writes merge instead of clobbering each other. Agents that were
-not dispatched never run.
+Both run in the same LangGraph superstep and report their findings back to the router, appending
+to `state["results"]` - an append-only channel, so parallel writes merge instead of clobbering
+each other. Agents that were not dispatched never run.
 
-The response agent then reads every result in state and writes a single reply that answers every
-problem, citing the record ids and doc ids the agents actually found.
+The router collects everything the agents found and hands the whole set to the response agent,
+which writes a single reply answering every problem, citing the record ids and doc ids the agents
+actually returned.
 
 ## The agents
 

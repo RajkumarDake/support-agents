@@ -100,5 +100,16 @@
     "summary": "WHAT THE CUSTOMER WANTS:\n- Refund for a duplicate charge.\n- Fix for failed uploads showing error ERR_5012.\n\nWHY IT NEEDS A HUMAN:\n- Refunds are decided by a human, not automation.\n- The mail uses high-priority wording, so it must be triaged by a person.\n\nWHAT THE HUMAN MUST DECIDE:\n- Whether to approve a refund for the duplicate charge.",
     "status": "waiting_for_human",
     "created_at": "2026-09-08T12:45:42+00:00"
+  },
+  {
+    "ticket_id": "8571",
+    "priority": "high",
+    "sla_hours": 4,
+    "category": "refund",
+    "customer_email": "dana@northwind.io",
+    "ticket": "I was charged twice and uploads fail with ERR_5012",
+    "summary": "WHAT THE CUSTOMER WANTS:\n- A refund for a duplicate charge on their account.\n- A fix for uploads failing with error ERR_5012.\n\nWHY IT NEEDS A HUMAN:\n- Refunds are decided by a human; automation cannot approve or deny them.\n- The mail uses high-priority wording, so a judgement call is needed on how urgently to treat the ERR_5012 issue.\n\nWHAT THE HUMAN MUST DECIDE:\n- Whether to approve the refund for the duplicate charge.",
+    "status": "waiting_for_human",
+    "created_at": "2026-09-08T12:50:01+00:00"
   }
 ]

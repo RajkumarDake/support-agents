@@ -1,4 +1,4 @@
-"""The graph: the router fans out to the agents a mail needs, the response agent merges them."""
+"""The graph: router fans out to the agents, agents report back, router hands off to response."""
 
 import random
 import time
@@ -9,7 +9,7 @@ from agents.account.agent import account_agent
 from agents.escalation.agent import escalation_agent
 from agents.knowledge.agent import knowledge_agent
 from agents.response.agent import response_agent
-from agents.router.agent import router_agent
+from agents.router.agent import collect, router_agent
 from agents.troubleshoot.agent import troubleshoot_agent
 from state import AGENTS, SupportState, new_state
 from trace import save_trace
@@ -32,12 +32,14 @@ def build_graph():
     g.add_node("router", router_agent)
     for name in AGENTS:
         g.add_node(name, NODES[name])
+    g.add_node("collect", collect)
     g.add_node("response", response_agent)
 
     g.set_entry_point("router")
     g.add_conditional_edges("router", fan_out, AGENTS)
     for name in AGENTS:
-        g.add_edge(name, "response")
+        g.add_edge(name, "collect")
+    g.add_edge("collect", "response")
     g.add_edge("response", END)
     return g.compile()
 

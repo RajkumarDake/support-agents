@@ -109,6 +109,17 @@ def _needs_human(category: str, sentiment: dict, priority: dict) -> bool:
             or priority["priority"] == "high")
 
 
+def collect(state: SupportState) -> dict:
+    """Agents report back here. The router gathers their findings, then hands them to response."""
+    t0 = time.perf_counter()
+    results = state.get("results") or []
+    names = ", ".join(r["agent"].split()[0].lower() for r in results)
+    return {
+        "trace": [span("Router Agent (collect)", t0, f"{len(results)} agents reported",
+                       f"collected findings from {names or 'no agent'}")],
+    }
+
+
 def clean_dispatches(raw: object, ticket: str, email: str) -> list[dict]:
     """Keep one valid dispatch per agent. Account is useless without an email, so drop it."""
     out: dict[str, dict] = {}
