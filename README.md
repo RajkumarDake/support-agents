@@ -1,18 +1,19 @@
 # support-agents
 
-A customer support system built as a **LangGraph multi-agent state machine**. A ticket comes in,
-a router agent classifies it, specialist agents work it with their own tools, an evaluator gates
-the answer, and anything low-confidence or high-risk lands in a human queue.
+A customer support system built as a **LangGraph multi-agent state machine**. A mail comes in, a
+router agent splits it into problems and dispatches each one to the specialist that can solve it,
+those agents run in parallel with their own tools, a response agent merges their answers, an
+evaluator gates the result, and anything low-confidence or high-risk lands in a human queue.
 
 ![the UI after one ticket](screenshot.png)
 
 ## Why it looks like this
 
-It started as an FAQ retrieval bot: one retriever, one answer step. Real tickets are not one
-shape. Some need account data ("was I charged twice?"), some need troubleshooting steps
-("ERR_5012 on upload"), some need a human ("I want a refund"). A single chain cannot branch and
-cannot loop, so it was re-architected as a graph: specialist agents behind a router, and a real
-escalation edge off an evaluator node.
+It started as an FAQ retrieval bot: one retriever, one answer step. Real support mail is not one
+shape, and it is usually not one problem either: *"I was charged twice AND my uploads keep
+failing with ERR_5012"* is one mail with two unrelated jobs in it. A single chain cannot split
+that, cannot branch and cannot loop, so it was re-architected as a graph: a router that fans out
+to every agent the mail needs, and a real escalation edge off an evaluator node.
 
 ## The graph
 
@@ -20,16 +21,15 @@ escalation edge off an evaluator node.
 flowchart TD
     A[ingest] --> B[Router Agent]
 
-    B -->|technical| C[Troubleshoot Agent]
-    B -->|billing / account / refund<br/>+ needs_account_data| D[Account Agent]
-    B -->|everything else| E[Knowledge Agent]
+    B -->|sub-query| C[Knowledge Agent]
+    B -->|sub-query| D[Account Agent]
+    B -->|sub-query| E[Troubleshoot Agent]
 
-    C --> E
-    D --> E
+    C --> F[Response Agent]
+    D --> F
+    E --> F
 
-    E --> F[Response Agent]
     F --> G{Evaluator}
-
     G -->|confidence >= 0.60<br/>no risk flags| H[respond]
     G -->|low confidence / refund<br/>angry / legal| I[Escalation Agent]
     I --> H
@@ -40,21 +40,28 @@ flowchart TD
     style H fill:#1f2937,stroke:#34d399,color:#fff
 ```
 
-Both specialists chain into the Knowledge Agent, so the writer always has help-doc citations on
-top of whatever records were pulled. `technical` therefore runs **two** specialists in sequence -
-that is the multi-agent cooperation path in the demo.
+**The dispatch model.** The Router Agent splits the mail into separate problems and writes one
+*transformed sub-query* per problem, addressed to the agent that can solve it, with the details
+that agent needs (`{"agent": "troubleshoot", "query": "upload fails with ERR_5012", "details":
+{"error_code": "ERR_5012"}}`). Every dispatched agent then runs on its own piece with its own
+tools - one, two or all three of them, concurrently in a single LangGraph superstep; agents that
+were not dispatched never run. The Response Agent merges every result into one reply that
+answers every problem, and the Evaluator scores that merged draft.
+
+Each specialist appends its result to `state["results"]`, an append-only channel, so parallel
+writes merge instead of clobbering each other.
 
 ## The six agents
 
 | Agent | Job | Tools | Failure mode |
 |---|---|---|---|
-| **Router** | classify `billing / technical / account / refund / unclear`, decide whether this customer's records are needed | `detect_sentiment`, `check_priority_keywords` | keyword routing table |
+| **Router** | split the mail into problems, dispatch a sub-query to each agent needed, classify `billing / technical / account / refund / unclear` | `detect_sentiment`, `check_priority_keywords` | keyword dispatch table |
 | **Knowledge** | BM25 retrieval over 40 help docs in `corpus/` | `search_docs`, `filter_by_category` | LLM query rewrite only fires on weak retrieval; falls back to long-word extraction |
 | **Account** | pull plan, invoices, usage from `data/*.csv`; flag duplicate charges | `get_customer`, `get_invoices`, `usage_summary` | calls every lookup instead of choosing |
 | **Troubleshoot** | match the error code and open incidents, order the fix steps | `lookup_error`, `known_issues` | prints the documented steps verbatim |
-| **Response** | write the customer-facing reply from state only, cite sources | `get_template`, `check_tone` | fills the category template with retrieved facts |
-| **Escalation** | write the human handoff, set priority, queue it | `create_handoff`, `notify_team` | assembles the handoff from state fields |
-| *Evaluator* (control node) | score sources / coverage / specificity / tone, blended with an LLM judge | - | deterministic score only |
+| **Response** | merge every agent result into one reply that answers every problem, cite sources | `get_template`, `check_tone` | fills the category template with one block per result |
+| **Escalation** | write the human handoff, set priority, queue it | `create_handoff`, `notify_team` | assembles the handoff from the merged results |
+| *Evaluator* (control node) | score sources / coverage / specificity / tone, blended with an LLM judge | `score_sources`, `judge_answer` | deterministic score only |
 
 Every agent degrades to a deterministic fallback and prints a `[warn]` line to stderr. With the
 API key removed the whole graph still runs end to end in **under half a second** and still
@@ -64,7 +71,7 @@ produces a grounded, cited answer.
 
 ```bash
 ./run.sh setup                                  # venv + deps (python3.11)
-./run.sh demo                                   # five tickets, five paths, trace trees
+./run.sh demo                                   # five mails, five fan-outs, trace trees
 ./run.sh serve                                  # API + UI on http://localhost:8000
 ./run.sh ask "Getting ERR_5012 on upload" --email sam@arcadia.co
 ```
@@ -105,34 +112,42 @@ After a run the CLI prints it as a tree and the full record is written to
 `traces/<ticket_id>.json`:
 
 ```
-Ticket #5181  "I was charged twice this month - two identical $490 charges..."
-├── Router Agent          4253ms  category=refund sentiment=neutral priority=high
-├── Account Agent         5781ms  CUS-1001 Pro/active, tools: get_customer, get_invoices | DUPLICATE...
-├── Knowledge Agent          0ms  3 docs matched: billing-duplicate-charge, refund-duplicate-charge...
-├── Response Agent       56901ms  draft 859 chars, tone clean
-├── Evaluator             1354ms  confidence 0.86 HIGH (strong sources; judge 0.80: Accurate, cites...)
-└── Escalation Agent     16363ms  priority=high -> human queue (sla 4h)
-   ESCALATED  confidence 0.86  total 84652ms
+Ticket #3517  "Two problems in one mail. My last invoice shows two identical $490 ..."
+├── Router Agent          2822ms  dispatched: account, troubleshoot | category=billing sentiment=ne...
+├── Account Agent        17227ms  tools: get_customer, get_invoices | duplicate INV-8804/INV-8805
+├── Troubleshoot Agent   33018ms  tools: lookup_error, known_issues | ERR_5012 + INC-2291
+├── Response Agent       14426ms  merged 2 agent results (account, troubleshoot), draft 1170 chars...
+└── Evaluator             1566ms  confidence 0.80 HIGH (strong sources; judge 0.70: Both issues add...
+   ANSWERED  confidence 0.80  total 69059ms
 ```
 
-That tree answers the three questions you actually get asked about an agent system: which path
-did it take, what did each step cost, and what did it base the answer on.
+Two agents, two problems, one reply - and the wall clock for that ticket was 51.8s against 69.0s
+of summed agent time, which is the fan-out running concurrently. The tree answers the three
+questions you actually get asked about an agent system: which agents were dispatched and why,
+what did each cost, and what did it base the answer on.
 
 ## Design decisions
 
-**Why a graph, not a chain.** A chain is a fixed sequence. This workload needs two things a
-chain cannot express: conditional branching (technical tickets need error lookup, billing
-tickets need invoice lookup) and a loop back to a different terminal (escalation). LangGraph
-gives typed shared state plus conditional edges, so routing is a declared edge you can read off
-`graph.py` rather than a pile of `if` statements buried in one function.
+**Why a graph, not a chain.** A chain is a fixed sequence. This workload needs three things a
+chain cannot express: a **fan-out** (one mail, two or three problems, each solved by a different
+agent), a fan-in that merges those answers, and a loop back to a different terminal
+(escalation). LangGraph gives typed shared state plus conditional edges, so the fan-out is a
+declared edge you can read off `graph.py` rather than a pile of `if` statements buried in one
+function.
 
-**Why six agents, not one big prompt.** Each agent has one job, one prompt, one tool set and one
-failure mode. That means each can be tested, degraded and swapped independently - the Account
-Agent can lose the LLM and still return real invoice rows. One mega-prompt with every tool
-attached would be cheaper to write and impossible to debug: you would not know whether a bad
-answer came from misrouting, bad retrieval, or bad writing. The trace tells you exactly which.
+**Why the router transforms the query.** Handing every agent the raw mail makes each of them
+re-read the whole thing and guess which part is theirs. The router does that split once, so the
+Troubleshoot Agent gets "upload fails with ERR_5012" and the Account Agent gets "check the last
+invoice for duplicate charges" - narrower prompts, better tool choices, and a trace that shows
+exactly what each agent was asked.
 
-**Why escalation is an edge, not an `if`.** `route_after_eval` in `agents/evaluator.py` is a
+**Why six agents, not one big prompt.** Each agent has one job, one prompt, one tool set, one
+folder and one failure mode. That means each can be tested, degraded and swapped independently -
+the Account Agent can lose the LLM and still return real invoice rows. One mega-prompt with every
+tool attached would be cheaper to write and impossible to debug: you would not know whether a bad
+answer came from a missed dispatch, bad retrieval, or bad writing. The trace tells you which.
+
+**Why escalation is an edge, not an `if`.** `route_after_eval` in `agents/evaluator/agent.py` is a
 conditional edge in the compiled graph. The escalation policy is therefore one readable function
 that a support lead could review, not logic hidden inside the response node. It fires on low
 confidence, refund requests, angry sentiment, or legal keywords - a refund is escalated even
@@ -152,12 +167,18 @@ hurts.
 ## Layout
 
 ```
-graph.py          nodes, edges, run_ticket()
+graph.py          nodes, the fan-out edge, run_ticket()
 state.py          the typed dict every node reads and writes
 llm.py            the one shared get_llm() / call_llm()
-trace.py          span(), the rich tree, trace JSON
-agents/           router, knowledge, account, troubleshoot, response, escalation, evaluator
-tools/            sentiment, docs (BM25), accounts, diagnostics, writing, handoff
+trace.py          span(), record(), the rich tree, trace JSON
+agents/           one folder per agent, each with agent.py (node + prompt) and tools.py
+  router/         detect_sentiment, check_priority_keywords
+  knowledge/      search_docs, filter_by_category
+  account/        get_customer, get_invoices, usage_summary
+  troubleshoot/   lookup_error, known_issues
+  response/       get_template, check_tone
+  escalation/     create_handoff, notify_team
+  evaluator/      score_sources, judge_answer
 corpus/           40 markdown help docs
 data/             customers.csv, invoices.csv, error_codes.json, incidents.json, human_queue.json
 api.py            FastAPI: /ticket, /queue, /health, /
@@ -167,8 +188,9 @@ demo.py, cli.py   the two entry points
 
 ## Known limits
 
-- One LLM call per agent, in sequence, on a reasoning model whose reasoning cannot be
-  disabled: a live ticket takes **25-90 seconds**, and it varies a lot with provider load. The per-agent breakdown is in every trace. `demo.py` runs the five tickets
-  concurrently so the whole demo is ~90 seconds.
+- One LLM call per agent on a reasoning model whose reasoning cannot be disabled: a live ticket
+  takes **25-90 seconds**, and it varies a lot with provider load. The fanned-out specialists run
+  concurrently, so a two-agent mail costs the slower of the two, not the sum. The per-agent
+  breakdown is in every trace. `demo.py` runs the five mails concurrently too.
 - Results are cached in-process; `traces/*.json` is the durable copy. There is no database.
 - `data/human_queue.json` is a file, not a queue service. `notify_team` logs instead of paging.
